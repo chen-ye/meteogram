@@ -3,6 +3,7 @@ import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { format, parseISO } from 'date-fns';
+import { Thermometer, Droplet, Wind, Cloud } from 'lucide-react';
 
 import { useMeteogramData } from './meteogram/hooks/useMeteogramData';
 import { useMeteogramScales } from './meteogram/hooks/useMeteogramScales';
@@ -182,14 +183,46 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         <TooltipInPortal
             top={tooltipTop}
             left={tooltipLeft}
-            style={{...defaultStyles, backgroundColor: '#0f172a', color: 'white', zIndex: 9999, border: '1px solid rgba(255,255,255,0.2)'}}
+            style={{ ...defaultStyles, padding: 0, background: 'transparent', boxShadow: 'none', borderRadius: 0, border: 'none' }}
         >
-            <div className="text-xs">
-                <div className="font-bold">{format(parseISO(tooltipData.time), 'HH:mm')}</div>
-                <div>Temp: {formatTemp(tooltipData.temperature_2m, unitSystem)}°</div>
-                <div>Rain: {formatPrecip(tooltipData.precipitation, unitSystem)}{getUnitLabel('precip', unitSystem)}</div>
-                <div>Wind: {formatSpeed(tooltipData.windspeed_10m, unitSystem)} {getUnitLabel('speed', unitSystem)}</div>
-                <div>Cloud: {tooltipData.cloudcover}%</div>
+            <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl p-3 text-xs w-32">
+                <div className="text-white font-bold mb-2 border-b border-white/10 pb-1">
+                    {format(parseISO(tooltipData.time), 'HH:mm')}
+                </div>
+
+                <div className="space-y-1.5">
+                    {/* Temp */}
+                    <div className="flex items-center gap-2">
+                        <Thermometer className="w-3.5 h-3.5 text-amber-400" />
+                        <span className="text-white font-medium">
+                            {formatTemp(tooltipData.temperature_2m, unitSystem)}°
+                        </span>
+                    </div>
+
+                    {/* Rain */}
+                    <div className="flex items-center gap-2">
+                        <Droplet className="w-3.5 h-3.5 text-blue-400" />
+                        <div className="flex items-baseline gap-0.5">
+                            <span className="text-white font-medium">{formatPrecip(tooltipData.precipitation, unitSystem)}</span>
+                            <span className="text-white/50 text-[10px]">{getUnitLabel('precip', unitSystem)}</span>
+                        </div>
+                    </div>
+
+                    {/* Wind */}
+                    <div className="flex items-center gap-2">
+                        <Wind className="w-3.5 h-3.5 text-red-500" />
+                        <div className="flex items-baseline gap-0.5">
+                            <span className="text-white font-medium">{formatSpeed(tooltipData.windspeed_10m, unitSystem)}</span>
+                            <span className="text-white/50 text-[10px]">{getUnitLabel('speed', unitSystem)}</span>
+                        </div>
+                    </div>
+
+                    {/* Cloud */}
+                    <div className="flex items-center gap-2">
+                        <Cloud className="w-3.5 h-3.5 text-white/60" />
+                        <span className="text-white font-medium">{tooltipData.cloudcover}%</span>
+                    </div>
+                </div>
             </div>
         </TooltipInPortal>
       )}

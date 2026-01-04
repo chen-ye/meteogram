@@ -20,7 +20,7 @@ export const CurrentTimeLine: React.FC<CurrentTimeLineProps> = ({ timeScale, hei
             {/* Solid Alpha Line */}
             <Line
                 from={{ x: 0, y: 0 }}
-                to={{ x: 0, y: height }}
+                to={{ x: 0, y: height + 12 }}
                 stroke="rgba(255,255,255,0.4)"
                 strokeWidth={1}
                 pointerEvents="none"
