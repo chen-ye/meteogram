@@ -4,7 +4,7 @@ import type { HourlyDataPoint } from '../types';
 
 export function useMeteogramData(data: WeatherData): HourlyDataPoint[] {
   return useMemo(() => {
-    return data.hourly.time.slice(0, 48).map((t: string, i: number) => ({
+    return data.hourly.time.map((t: string, i: number) => ({
       time: t,
       temperature_2m: data.hourly.temperature_2m[i],
       apparent_temperature: data.hourly.apparent_temperature?.[i] ?? data.hourly.temperature_2m[i],

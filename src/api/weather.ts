@@ -39,6 +39,7 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
     daily: 'sunrise,sunset',
     current_weather: true,
     timezone: 'auto',
+    forecast_days: 5,
   };
 
   const response = await axios.get<WeatherData>(BASE_URL, { params });
