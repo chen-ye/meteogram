@@ -75,7 +75,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
   return (
     <div
         ref={containerRef}
-        className="relative touch-none meteogram-container"
+        className="relative touch-pan-y meteogram-container"
         onPointerMove={handlePointerMove}
         onPointerLeave={() => hideTooltip()}
         data-testid="meteogram-chart"

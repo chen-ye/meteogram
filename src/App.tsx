@@ -133,11 +133,11 @@ function App() {
 
 
   return (
-    <div className="min-h-screen bg-[#004e92] text-white flex flex-col font-sans selection:bg-blue-500/30 overflow-hidden">
+    <div className="min-h-[100svh] bg-[#004e92] text-white flex flex-col font-sans selection:bg-blue-500/30">
        {/* Main Gradient Background */}
        <div className="fixed inset-0 bg-gradient-to-b from-[#004e92] via-[#00387a] to-[#002955] -z-10" />
 
-       <header className="p-8 md:p-12 md:pb-0 pb-0 flex flex-col items-start text-left bg-transparent z-20">
+       <header className="p-8 md:p-12 md:pb-0 pb-0 flex flex-col items-start text-left bg-transparent z-20 shrink-0">
 
           <div className="flex flex-col items-start animate-in fade-in slide-in-from-top-4 duration-700 w-full relative">
 
@@ -228,9 +228,9 @@ function App() {
           </div>
        </header>
 
-       <main className="flex-1 w-full relative mt-auto">
-          <div className="w-full h-[500px] md:h-[550px] relative">
-             <ParentSize>
+       <main className="flex-1 w-full relative mt-auto flex flex-col">
+          <div className="flex-1 w-full min-h-[350px] relative flex flex-col">
+             <ParentSize className="w-full h-full flex-1">
                {({ width, height }: { width: number; height: number }) => (
                  <Meteogram data={weather} width={width} height={height} unitSystem={unitSystem} />
                )}
