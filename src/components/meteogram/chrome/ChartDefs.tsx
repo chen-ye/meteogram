@@ -3,10 +3,12 @@ import { LinearGradient } from '@visx/gradient';
 import type { ScaleTime, ScaleLinear } from 'd3-scale';
 import { getWindSpeed, getDate } from '../utils';
 
+import type { HourlyDataPoint } from '../types';
+
 interface ChartDefsProps {
     width: number;
     height: number;
-    hourlyData: any[]; // Avoid circular dep if possible, or use strict type
+    hourlyData: HourlyDataPoint[];
     timeScale: ScaleTime<number, number>;
     windSpeedScale: ScaleLinear<number, number>;
 }

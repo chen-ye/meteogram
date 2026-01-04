@@ -1,7 +1,6 @@
 import React from 'react';
 import { Group } from '@visx/group';
 import { Line } from '@visx/shape';
-import { format } from 'date-fns';
 import type { ScaleTime } from 'd3-scale';
 
 interface CurrentTimeLineProps {
