@@ -5,7 +5,7 @@ import { useGeocoding } from './hooks/useGeocoding';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
-import { Droplet, MapPin, Gauge, Clock, Database, Wind } from 'lucide-react';
+import { Droplet, MapPin, Clock, Database, Wind } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
 
