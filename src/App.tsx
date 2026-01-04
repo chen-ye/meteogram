@@ -7,16 +7,20 @@ import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
 import { Droplet, MapPin, Clock, Database, Wind } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { parseISO, addHours, formatDistanceToNow } from 'date-fns';
 import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
 
-// Helper to find next rain
+// Helper to find next rain (within 24 hours)
 const getNextRain = (hourly: WeatherData['hourly']) => {
   const now = new Date();
+  const limit = addHours(now, 24);
   const index = hourly.time.findIndex(t => new Date(t) > now);
   if (index === -1) return null;
 
   for (let i = index; i < hourly.precipitation.length; i++) {
+    const time = new Date(hourly.time[i]);
+    if (time > limit) break;
+
     if (hourly.precipitation[i] > 0) {
       return { time: hourly.time[i], amount: hourly.precipitation[i] };
     }
@@ -122,9 +126,6 @@ function App() {
 
   const current = weather.current_weather;
   const nextRain = getNextRain(weather.hourly);
-  const nextRainText = nextRain
-    ? `Rain at ${format(parseISO(nextRain.time), 'HH:mm')}`
-    : 'No rain expected';
 
   // Apparent temp / Feels like
   // Find current hour index
@@ -219,11 +220,13 @@ function App() {
                  </div>
              </div>
 
-             {/* Rain at specific time (Dynamic) */}
-             <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold tracking-wider uppercase mt-3">
-                <Droplet className="w-3 h-3" />
-                <span>{nextRainText}</span>
-             </div>
+             {/* Rain at specific time (Dynamic) - Condition Render */}
+             {nextRain && (
+               <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold tracking-wider uppercase mt-3">
+                  <Droplet className="w-3 h-3" />
+                  <span>Rain {formatDistanceToNow(parseISO(nextRain.time), { addSuffix: true })}</span>
+               </div>
+             )}
 
           </div>
        </header>
