@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from './hooks/useLocation';
 import { useWeather, type WeatherData } from './hooks/useWeather';
 import { useGeocoding } from './hooks/useGeocoding';
+import { LocationSearch } from './components/LocationSearch';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
@@ -34,6 +35,23 @@ function App() {
     return (u === 'metric' || u === 'imperial') ? u : 'metric';
   });
 
+  // Manual Location State (from URL)
+  const [manualLocation, setManualLocation] = useState<{latitude: number; longitude: number} | null>(() => {
+      const params = new URLSearchParams(window.location.search);
+      const lat = params.get('lat');
+      const lon = params.get('lon');
+      if (lat && lon) {
+          return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
+      }
+      return null;
+  });
+
+  const { location: autoLocation, error: locError, loading: locLoading } = useLocation();
+
+  // Determine active location: Manual overrides Auto
+  const activeLocation = manualLocation || autoLocation;
+  const isLocating = !manualLocation && locLoading;
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('units') !== unitSystem) {
@@ -43,13 +61,28 @@ function App() {
     }
   }, [unitSystem]);
 
-  const { location, error: locError } = useLocation();
-  const { weather, isLoading, isError } = useWeather(location?.latitude, location?.longitude);
-  const { locationName } = useGeocoding(location?.latitude, location?.longitude);
+  // Persist Location changes
+  const updateLocationUrl = (lat?: number, lon?: number) => {
+      const params = new URLSearchParams(window.location.search);
+      if (lat && lon) {
+          params.set('lat', lat.toString());
+          params.set('lon', lon.toString());
+          setManualLocation({ latitude: lat, longitude: lon });
+      } else {
+          params.delete('lat');
+          params.delete('lon');
+          setManualLocation(null);
+      }
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, '', newUrl);
+  };
+
+  const { weather, isLoading, isError } = useWeather(activeLocation?.latitude, activeLocation?.longitude);
+  const { locationName } = useGeocoding(activeLocation?.latitude, activeLocation?.longitude);
 
 
 
-  if (!location) {
+  if (!activeLocation && isLocating) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-900 text-white p-4 text-center font-sans">
         {locError ? (
@@ -76,10 +109,13 @@ function App() {
     );
   }
 
-  if (isError || !weather) {
+  if (isError || !weather || !activeLocation) {
      return (
-        <div className="flex h-screen items-center justify-center bg-slate-900 text-white">
+        <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
            <p className="text-red-400 font-light">Failed to load weather data.</p>
+           <button onClick={() => updateLocationUrl()} className="px-4 py-2 bg-blue-600 rounded text-sm hover:bg-blue-500 transition-colors">
+             Try Auto-Location
+           </button>
         </div>
      );
   }
@@ -105,33 +141,40 @@ function App() {
 
           <div className="flex flex-col items-start animate-in fade-in slide-in-from-top-4 duration-700 w-full relative">
 
-             {/* Unit Switcher - Segmented Control */}
-             <div
-                onClick={() => setUnitSystem(prev => prev === 'metric' ? 'imperial' : 'metric')}
-                className="absolute top-0 right-0 flex items-center p-1 bg-blue-950/20 backdrop-blur-sm rounded-lg border border-white/5 isolate cursor-pointer group"
-             >
-                {/* Sliding Background */}
-                <div
-                    className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-white/10 rounded shadow-sm transition-transform duration-300 ease-out ${
-                        unitSystem === 'imperial' ? 'translate-x-full' : 'translate-x-0'
-                    }`}
-                />
+             {/* Top Right Controls Container */}
+             <div className="w-full relative flex items-center justify-between gap-3 mb-6 md:absolute md:top-0 md:right-0 md:w-auto md:justify-end md:mb-0">
 
-                <div
-                    className={`relative z-10 px-3 py-1 rounded text-xs font-bold transition-colors duration-300 w-12 text-center select-none ${
-                        unitSystem === 'metric' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-                    }`}
-                >
-                    °C
-                </div>
+                 {/* Location Search & Locate Me */}
+                 <LocationSearch
+                    onLocationSelect={(lat, lon) => updateLocationUrl(lat, lon)}
+                    onLocateMe={() => updateLocationUrl()}
+                    isLocating={isLocating}
+                 />
 
-                <div
-                    className={`relative z-10 px-3 py-1 rounded text-xs font-bold transition-colors duration-300 w-12 text-center select-none ${
-                        unitSystem === 'imperial' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-                    }`}
-                >
-                    °F
-                </div>
+                 {/* Unit Switcher */}
+                 <div
+                    onClick={() => setUnitSystem(prev => prev === 'metric' ? 'imperial' : 'metric')}
+                    className="flex items-center p-1 bg-blue-950/20 backdrop-blur-sm rounded-lg border border-white/5 isolate cursor-pointer group h-8 relative w-24"
+                 >
+                    {/* Sliding Background */}
+                    <div
+                        className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-white/10 rounded shadow-sm transition-transform duration-300 ease-out ${
+                            unitSystem === 'imperial' ? 'translate-x-full' : 'translate-x-0'
+                        }`}
+                    />
+
+                    <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
+                            unitSystem === 'metric' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
+                        }`}>
+                        °C
+                    </div>
+
+                    <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
+                            unitSystem === 'imperial' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
+                        }`}>
+                        °F
+                    </div>
+                 </div>
              </div>
 
              {/* Big Thin Temp with aligned unit */}
@@ -160,7 +203,7 @@ function App() {
              <div className="flex items-center gap-3 text-blue-200/60 text-xs font-semibold tracking-widest uppercase">
                  <div className="flex items-center gap-1.5">
                      <MapPin className="w-3 h-3 text-blue-200/40" />
-                     <span>{locationName ? locationName.toUpperCase() : 'LOCATING...'}</span>
+                     <span>{manualLocation ? (locationName ? locationName.toUpperCase() : 'COORDINATES') : (locationName ? locationName.toUpperCase() : 'LOCATING...')}</span>
                  </div>
                  <div className="flex items-center gap-1.5">
                     <Clock className="w-3 h-3 text-blue-200/40" />

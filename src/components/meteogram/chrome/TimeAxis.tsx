@@ -1,0 +1,38 @@
+import React from 'react';
+import { AxisBottom } from '@visx/axis';
+import { format } from 'date-fns';
+import type { ScaleTime } from 'd3-scale';
+
+interface TimeAxisProps {
+    timeScale: ScaleTime<number, number>;
+    yMax: number;
+}
+
+export const TimeAxis: React.FC<TimeAxisProps> = ({ timeScale, yMax }) => {
+    return (
+             <AxisBottom
+                scale={timeScale}
+                top={yMax}
+                stroke="transparent"
+                tickStroke="transparent"
+                numTicks={8}
+                tickFormat={(val) => {
+                    const d = val as Date;
+                    if (d.getHours() === 0) return format(d, 'EEE').toUpperCase();
+                    return d.getHours().toString();
+                }}
+                 tickLabelProps={(val) => {
+                     const isDay = (val as Date).getHours() === 0;
+                     return {
+                        fill: isDay ? '#ffffff' : 'rgba(255,255,255,0.5)', // Alpha white
+                        fontSize: isDay ? 12 : 11,
+                        fontWeight: isDay ? 700 : 400,
+                        textAnchor: 'start', // Align left of the line
+                        dx: 4,
+                        dy: 4
+                     }
+                 }}
+                 data-part="time-axis"
+             />
+    );
+};
