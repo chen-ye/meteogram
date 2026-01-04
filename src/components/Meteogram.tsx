@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Group } from '@visx/group';
 import { AreaClosed, Area, Bar, LinePath, Line } from '@visx/shape';
 import { scaleTime, scaleLinear } from '@visx/scale';
@@ -19,6 +19,17 @@ export interface MeteogramProps {
   unitSystem: UnitSystem;
 }
 
+interface HourlyDataPoint {
+  time: string;
+  temperature_2m: number;
+  apparent_temperature: number;
+  dewpoint_2m: number;
+  precipitation: number;
+  cloudcover: number;
+  windspeed_10m: number;
+  winddirection_10m: number;
+}
+
 // Accessors (generic)
 const getDate = (d: { time: string }) => parseISO(d.time);
 
@@ -31,7 +42,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
   const yMax = Math.max(height - margin.top - margin.bottom, 0);
 
   // Tooltip
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip();
+  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip<HourlyDataPoint>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
   });
@@ -51,11 +62,11 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
   }, [data]);
 
   // Accessors
-  const getTemp = (d: typeof hourlyData[0]) => d.temperature_2m;
-  const getDewPoint = (d: typeof hourlyData[0]) => d.dewpoint_2m;
-  const getPrecip = (d: typeof hourlyData[0]) => d.precipitation;
-  const getCloud = (d: typeof hourlyData[0]) => d.cloudcover;
-  const getWindSpeed = (d: typeof hourlyData[0]) => d.windspeed_10m;
+  const getTemp = (d: HourlyDataPoint) => d.temperature_2m;
+  const getDewPoint = (d: HourlyDataPoint) => d.dewpoint_2m;
+  const getPrecip = (d: HourlyDataPoint) => d.precipitation;
+  const getCloud = (d: HourlyDataPoint) => d.cloudcover;
+  const getWindSpeed = (d: HourlyDataPoint) => d.windspeed_10m;
 
 
   // Scales (Metric domains)
@@ -88,7 +99,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         // Ensure strictly positive domain max to avoid NaN if all 0
         domain: [0, Math.max(...hourlyData.map(getPrecip), 5)],
       }),
-    [yMax, hourlyData]
+    [yMax, hourlyData] // getPrecip is constant ref, but included for completeness if needed (though it's derived from component scope correctly)
   );
 
   const cloudCenterY = yMax * 0.12;
@@ -97,7 +108,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         range: [0, 15], // Narrower range
         domain: [0, 100],
     }),
-    [yMax]
+    []
   );
 
   const windSpeedScale = useMemo(
@@ -113,7 +124,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
   // Night Shading Logic
   const nightRects = useMemo(() => {
-    const rects: any[] = [];
+    const rects: React.ReactElement[] = [];
     if (!data.daily || !data.daily.sunrise || !data.daily.sunset) return rects;
 
     data.daily.time.forEach((_, i) => {
@@ -170,6 +181,13 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
     return rects;
   }, [data.daily, timeScale, xMax, height, hourlyData]);
 
+    // Pre-calculate jitter to avoid side-effects in render
+    const dropletJitter = useMemo(() => {
+        return hourlyData.map((d) => {
+             const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5);
+             return Array.from({length: numDroplets}).map(() => Math.random() * 6 - 3);
+        });
+    }, [hourlyData]);
 
 
   // Interaction
@@ -192,7 +210,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         });
       }
     },
-    [showTooltip, timeScale, margin, hourlyData, tempScale, xMax]
+    [showTooltip, timeScale, margin, hourlyData, tempScale, xMax, getTemp] // Added getTemp
   );
 
   if (width < 10) return null;
@@ -380,27 +398,25 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
 
              {/* Rain Droplets under Cloud - NEW */}
-             {hourlyData.map((d) => {
+             {hourlyData.map((d, index) => { // Use index for jitter lookup
                  if (d.precipitation <= 0) return null;
                  const x = timeScale(getDate(d)) ?? 0;
                  const cloudBottomY = cloudCenterY + (cloudScale(getCloud(d)) ?? 0);
 
                  // Render droplets based on intensity
                  const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5); // Cap at 5 droplets
-                 const droplets = [];
-                 for(let j=0; j<numDroplets; j++) {
-                     droplets.push(
-                         <circle
-                             key={`drop-${d.time}-${j}`}
-                             cx={x + (Math.random() * 6 - 3)} // Random jitter
-                             cy={cloudBottomY + 5 + (j * 4)} // Stack vertically
-                             r={1}
-                             fill="#60a5fa" // Light blue
-                             opacity={0.6}
-                         />
-                     )
-                 }
-                 return <g key={`rain-${d.time}`}>{droplets}</g>
+                 // const droplets = []; // REPLACED WITH JITTER ARRAY
+
+                 return dropletJitter[index].slice(0, numDroplets).map((jitter, j) => (
+                    <circle
+                        key={`drop-${d.time}-${j}`}
+                        cx={x + jitter} // Usage of pre-calc jitter
+                        cy={cloudBottomY + 5 + (j * 4)} // Stack vertically
+                        r={1}
+                        fill="#60a5fa" // Light blue
+                        opacity={0.6}
+                    />
+                 ));
              })}
 
 
@@ -454,11 +470,11 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
             style={{...defaultStyles, backgroundColor: '#0f172a', color: 'white', zIndex: 9999, border: '1px solid rgba(255,255,255,0.2)'}}
         >
             <div className="text-xs">
-                <div className="font-bold">{format(parseISO((tooltipData as any).time), 'HH:mm')}</div>
-                <div>Temp: {formatTemp((tooltipData as any).temperature_2m, unitSystem)}°</div>
-                <div>Rain: {formatPrecip((tooltipData as any).precipitation, unitSystem)}{getUnitLabel('precip', unitSystem)}</div>
-                <div>Wind: {formatSpeed((tooltipData as any).windspeed_10m, unitSystem)} {getUnitLabel('speed', unitSystem)}</div>
-                <div>Cloud: {(tooltipData as any).cloudcover}%</div>
+                <div className="font-bold">{format(parseISO(tooltipData.time), 'HH:mm')}</div>
+                <div>Temp: {formatTemp(tooltipData.temperature_2m, unitSystem)}°</div>
+                <div>Rain: {formatPrecip(tooltipData.precipitation, unitSystem)}{getUnitLabel('precip', unitSystem)}</div>
+                <div>Wind: {formatSpeed(tooltipData.windspeed_10m, unitSystem)} {getUnitLabel('speed', unitSystem)}</div>
+                <div>Cloud: {tooltipData.cloudcover}%</div>
             </div>
         </TooltipInPortal>
       )}
