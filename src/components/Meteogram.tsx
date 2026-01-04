@@ -36,8 +36,16 @@ const getDate = (d: { time: string }) => parseISO(d.time);
 // Bisector
 const bisectDate = bisector<{ time: string }, Date>((d) => parseISO(d.time)).left;
 
+// Accessors
+const getTemp = (d: HourlyDataPoint) => d.temperature_2m;
+const getDewPoint = (d: HourlyDataPoint) => d.dewpoint_2m;
+const getPrecip = (d: HourlyDataPoint) => d.precipitation;
+const getCloud = (d: HourlyDataPoint) => d.cloudcover;
+const getWindSpeed = (d: HourlyDataPoint) => d.windspeed_10m;
+
+const margin = { top: 60, right: 0, bottom: 40, left: 0 }; // Full width
+
 export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
-  const margin = { top: 60, right: 0, bottom: 40, left: 0 }; // Full width
   const xMax = Math.max(width - margin.left - margin.right, 0);
   const yMax = Math.max(height - margin.top - margin.bottom, 0);
 
@@ -60,13 +68,6 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
       winddirection_10m: data.hourly.winddirection_10m[i],
     }));
   }, [data]);
-
-  // Accessors
-  const getTemp = (d: HourlyDataPoint) => d.temperature_2m;
-  const getDewPoint = (d: HourlyDataPoint) => d.dewpoint_2m;
-  const getPrecip = (d: HourlyDataPoint) => d.precipitation;
-  const getCloud = (d: HourlyDataPoint) => d.cloudcover;
-  const getWindSpeed = (d: HourlyDataPoint) => d.windspeed_10m;
 
 
   // Scales (Metric domains)
@@ -210,7 +211,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         });
       }
     },
-    [showTooltip, timeScale, margin, hourlyData, tempScale, xMax, getTemp] // Added getTemp
+    [showTooltip, timeScale, hourlyData, tempScale, xMax] // Added getTemp
   );
 
   if (width < 10) return null;
