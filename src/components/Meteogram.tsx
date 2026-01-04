@@ -15,6 +15,7 @@ import { ChartDefs } from './meteogram/chrome/ChartDefs';
 import { GridSystem } from './meteogram/chrome/GridSystem';
 import { TimeAxis } from './meteogram/chrome/TimeAxis';
 import { NightCycles } from './meteogram/chrome/NightCycles';
+import { CurrentTimeLine } from './meteogram/chrome/CurrentTimeLine';
 import { ChartCursor } from './meteogram/chrome/ChartCursor';
 
 // Visuals
@@ -97,6 +98,11 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
                 height={height}
                 chartStart={getDate(hourlyData[0])}
             />
+            {/* Current Time Line */}
+            <CurrentTimeLine
+                timeScale={timeScale}
+                height={yMax}
+            />
         </Group>
 
         {/* Grid & Chrome */}
@@ -151,6 +157,25 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
          </Group>
 
       </svg>
+
+      {/* Current Time Pill (HTML Overlay) */}
+      {(() => {
+          const now = new Date();
+          const nowX = timeScale(now);
+          if (nowX === undefined) return null;
+
+          return (
+              <div
+                className="absolute px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white pointer-events-none flex items-center justify-center -translate-x-1/2 -translate-y-1/2 shadow-sm border border-white/5"
+                style={{
+                    left: MARGIN.left + nowX,
+                    top: MARGIN.top + yMax + 19, // Adjusted vertically
+                }}
+              >
+                 <span className="tabular-nums leading-none">{format(now, 'HH:mm')}</span>
+              </div>
+          );
+      })()}
 
       {/* Tooltip Portal */}
       {tooltipOpen && tooltipData && (

@@ -25,7 +25,13 @@ export interface GeocodingResult {
 
 export const searchLocations = async (query: string): Promise<GeocodingResult[]> => {
   if (!query || query.length < 2) return [];
-  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+
+  // Handle "City, State" format by taking the first part
+  const searchTerm = query.split(',')[0].trim();
+
+  if (searchTerm.length < 2) return [];
+
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=10&language=en&format=json`);
   if (!res.ok) throw new Error('Geocoding search failed');
   const data = await res.json();
   return data.results || [];
