@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-primary: #38bdf8;
+  --color-secondary: #818cf8;
+  --font-sans: 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif';
+}
+
+:root {
+  background-color: var(--color-background);
+  color: white;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+
+@utility text-box-trim-cap {
+  text-box-trim: both; /* Standard */
+  text-box-trim: trim-both; /* Potential Draft */
+  -webkit-text-box-trim: both; /* WebKit */
+  text-box-edge: cap alphabetic;
+  -webkit-text-box-edge: cap alphabetic;
+}
