@@ -5,7 +5,10 @@ export type { WeatherData };
 export function useWeather(lat?: number, lon?: number) {
   const { data, error, isLoading } = useSWR<WeatherData>(
     lat && lon ? ['weather', lat, lon] : null,
-    () => fetchWeather(lat!, lon!)
+    () => fetchWeather(lat!, lon!),
+    {
+      refreshInterval: 900000 // 15 minutes
+    }
   );
 
   return {
