@@ -24,7 +24,7 @@ export const TemperatureLayer: React.FC<TemperatureLayerProps> = ({ hourlyData, 
                 y={d => tempScale(getDewPoint(d)) ?? 0}
                 stroke="#22d3ee"
                 strokeWidth={2}
-                strokeDasharray="2 4" // Dotted
+                strokeDasharray="2 4"
                 strokeOpacity={0.8}
                 curve={curveMonotoneX}
                 data-part="dew-point-line"
@@ -56,7 +56,7 @@ export const TemperatureLayer: React.FC<TemperatureLayerProps> = ({ hourlyData, 
 
              {/* Temp Labels on Line (Max/Min Peaks for each day) */}
              {(() => {
-                // Find extrema for each day
+
                 const days = new Set(hourlyData.map(d => getDate(d).getDate()));
                 const labels: { x: number, y: number, text: string, type: 'min' | 'max' }[] = [];
 
@@ -64,12 +64,12 @@ export const TemperatureLayer: React.FC<TemperatureLayerProps> = ({ hourlyData, 
                    const dayData = hourlyData.filter(d => getDate(d).getDate() === day);
                    if (dayData.length === 0) return;
 
-                   // Min
+
                    const minPoint = dayData.reduce((prev, curr) => getTemp(curr) < getTemp(prev) ? curr : prev);
-                   // Max
+
                    const maxPoint = dayData.reduce((prev, curr) => getTemp(curr) > getTemp(prev) ? curr : prev);
 
-                   // Only add if not too close to edges of dataset (optional)
+
                    labels.push({
                       x: timeScale(getDate(maxPoint)) ?? 0,
                       y: tempScale(getTemp(maxPoint)) ?? 0,

@@ -24,10 +24,10 @@ export const TimeAxis: React.FC<TimeAxisProps> = ({ timeScale, yMax }) => {
                  tickLabelProps={(val) => {
                      const isDay = (val as Date).getHours() === 0;
                      return {
-                        fill: isDay ? '#ffffff' : 'rgba(255,255,255,0.5)', // Alpha white
+                        fill: isDay ? '#ffffff' : 'rgba(255,255,255,0.5)',
                         fontSize: isDay ? 12 : 11,
                         fontWeight: isDay ? 700 : 400,
-                        textAnchor: 'start', // Align left of the line
+                        textAnchor: 'start',
                         dx: 4,
                         dy: 4
                      }

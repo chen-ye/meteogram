@@ -26,11 +26,10 @@ import { TemperatureLayer } from './meteogram/visuals/TemperatureLayer';
 import { WindLayer } from './meteogram/visuals/WindLayer';
 
 export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
-  // 1. Data Processing
+
   const hourlyData = useMeteogramData(data);
 
-  // 2. Scales & Dimensions
-  // Calculate content width for horizontal scrolling (preserve density of ~48h per screen)
+
   const contentWidth = React.useMemo(() => {
     return Math.max(width, width * (hourlyData.length / 48));
   }, [width, hourlyData.length]);
@@ -46,14 +45,14 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
     cloudCenterY
   } = useMeteogramScales({ hourlyData, width: contentWidth, height, margin: MARGIN });
 
-  // 3. Tooltip Logic
+
   const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip<HourlyDataPoint>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
     detectBounds: true,
   });
 
-  // 4. Interaction Handler
+
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       const { x } = localPoint(event) || { x: 0 };
@@ -192,7 +191,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
                     className="absolute px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white pointer-events-none flex items-center justify-center -translate-x-1/2 -translate-y-1/2 shadow-sm border border-white/5"
                     style={{
                         left: MARGIN.left + nowX,
-                        top: MARGIN.top + yMax + 19, // Adjusted vertically
+                        top: MARGIN.top + yMax + 19,
                     }}
                   >
                      <span className="tabular-nums leading-none">{format(now, 'HH:mm')}</span>

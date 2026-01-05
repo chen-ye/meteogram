@@ -21,16 +21,16 @@ export const WindLayer: React.FC<WindLayerProps> = ({ hourlyData, timeScale, win
                 x={d => timeScale(getDate(d)) ?? 0}
                 y={d => windSpeedScale(getWindSpeed(d)) ?? 0}
                 stroke="#ef4444"
-                strokeWidth={2} // Thicker [NEW]
+                strokeWidth={2}
                 strokeOpacity={0.8}
                 curve={curveMonotoneX}
-                mask="url(#wind-line-mask)" // Apply Mask [NEW]
+                mask="url(#wind-line-mask)"
                 data-part="wind-line"
              />
 
              {/* Wind Stream Arrows - Positioned on the line WITHOUT knockout circle */}
              {hourlyData.map((d, i) => {
-                 if (i % 2 !== 0) return null; // Every 2nd hour
+                 if (i % 2 !== 0) return null;
                  const x = timeScale(getDate(d)) ?? 0;
                  const y = windSpeedScale(getWindSpeed(d)) ?? 0;
 

@@ -24,10 +24,10 @@ export function useLocation() {
           longitude: parseFloat(data.longitude),
         });
         setIsApproximate(true);
-        setError(null); // Clear any previous browser error if IP works
+        setError(null);
       } catch (err) {
         // If both fail, keep the original browser error or a generic one
-        // We leave the browser error if it was set, or set a new one
+
         if (err instanceof Error) {
             console.error("IP fallback failed:", err.message);
         }
@@ -67,8 +67,8 @@ export function useLocation() {
         }
 
         // Don't set error yet, strictly; wait for IP fallback
-        // But maybe log it or set it temporarily?
-        // Better: Try IP, if that fails, set the error.
+
+
 
         console.warn(msg);
         fetchIpLocation().catch(() => {

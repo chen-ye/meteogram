@@ -6,7 +6,7 @@ import { LocationSearch } from './components/LocationSearch';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
-import { Droplet, MapPin, Database, Wind } from 'lucide-react';
+import { Droplet, Database, Wind } from 'lucide-react';
 import { parseISO, addHours, formatDistanceToNow } from 'date-fns';
 import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
 

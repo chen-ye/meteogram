@@ -10,7 +10,7 @@ import type { ScaleTime, ScaleLinear } from 'd3-scale';
 
 interface CloudLayerProps {
     hourlyData: HourlyDataPoint[];
-    dailyData: WeatherData['daily']; // For sunny pills
+    dailyData: WeatherData['daily'];
     timeScale: ScaleTime<number, number>;
     cloudScale: ScaleLinear<number, number>;
     cloudCenterY: number;
@@ -26,7 +26,7 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
 
       const sunnyIndices: number[] = [];
 
-      // 1. Identify sunny indices
+
       hourlyData.forEach((d, i) => {
           const dateStr = d.time.substring(0, 10);
           const dayIndex = dailyData.time.findIndex(dt => dt === dateStr);
@@ -46,7 +46,7 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
 
       if (sunnyIndices.length === 0) return pills;
 
-      // 2. Group into ranges
+
       const ranges: {start: number, end: number}[] = [];
       let currentStart = sunnyIndices[0];
       let currentPrev = sunnyIndices[0];
@@ -63,8 +63,8 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
       }
       ranges.push({ start: currentStart, end: currentPrev });
 
-      // 3. Render rects
-      const pillWidth = (xMax / 48) * 1.5; // From original code
+
+      const pillWidth = (xMax / 48) * 1.5;
       const padding = pillWidth / 2;
 
       return ranges.map((range, i) => {
@@ -114,8 +114,8 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
                 y0={d => cloudCenterY - (cloudScale(getCloud(d)) ?? 0)}
                 y1={d => cloudCenterY + (cloudScale(getCloud(d)) ?? 0)}
                 fill="#ffffff"
-                fillOpacity={0.15} // Alpha fill
-                stroke="rgba(255,255,255,0.4)" // Outline
+                fillOpacity={0.15}
+                stroke="rgba(255,255,255,0.4)"
                 strokeWidth={1}
                 curve={curveMonotoneX}
                 data-part="cloud-area"
@@ -125,18 +125,18 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
              {sunnyPills}
 
              {/* Rain Droplets under Cloud */}
-             {hourlyData.map((d, index) => { // Use index for jitter lookup
+             {hourlyData.map((d, index) => {
                  if (d.precipitation <= 0) return null;
                  const x = timeScale(getDate(d)) ?? 0;
                  const cloudBottomY = cloudCenterY + (cloudScale(getCloud(d)) ?? 0);
 
                  // Render droplets based on intensity
-                 const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5); // Cap at 5 droplets
+                 const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5);
 
                  return dropletJitter[index].slice(0, numDroplets).map((jitter, j) => (
                     <Droplet
                         key={`drop-${d.time}-${j}`}
-                        x={x + jitter - 4.5} // Centered (width 9)
+                        x={x + jitter - 4.5}
                         y={cloudBottomY + 5 + (j * 11)}
                         width={9}
                         height={9}

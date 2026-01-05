@@ -22,7 +22,7 @@ export const NightCycles: React.FC<NightCyclesProps> = ({ data, timeScale, xMax,
         const nextSunriseStr = data.daily.sunrise[i+1];
         const nextSunrise = nextSunriseStr ? parseISO(nextSunriseStr) : null;
 
-        // 1. Draw rect from Sunset to next day Sunrise
+
         if (sunset && nextSunrise) {
              const xStart = timeScale(sunset);
              const xEnd = timeScale(nextSunrise);
