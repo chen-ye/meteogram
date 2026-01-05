@@ -188,10 +188,10 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
               return (
                   <div
-                    className="absolute px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white pointer-events-none flex items-center justify-center -translate-x-1/2 -translate-y-1/2 shadow-sm border border-white/5"
+                    className="absolute px-1.5 py-1 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white pointer-events-none flex items-center justify-center -translate-x-1/2 shadow-sm border border-white/5"
                     style={{
                         left: MARGIN.left + nowX,
-                        top: MARGIN.top + yMax + 19,
+                        top: MARGIN.top + yMax + 8,
                     }}
                   >
                      <span className="tabular-nums leading-none">{format(now, 'HH:mm')}</span>
@@ -253,7 +253,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
       {/* Scroll Hint */}
       <div
-          className="absolute bottom-3 right-4 text-[10px] uppercase tracking-widest text-white/30 font-semibold pointer-events-none"
+          className="absolute bottom-2.25 right-4 text-[10px] uppercase tracking-widest text-white/30 font-semibold pointer-events-none touch-only px-1.5 py-1 rounded bg-white/10 backdrop-blur-sm flex items-center justify-center"
           style={{
               animationName: 'fade-out',
               animationDuration: '1ms',

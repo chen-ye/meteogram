@@ -36,3 +36,13 @@ body {
     opacity: 0;
   }
 }
+
+.touch-only {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .touch-only {
+    display: block;
+  }
+}

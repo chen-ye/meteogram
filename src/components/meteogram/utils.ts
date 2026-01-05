@@ -14,4 +14,4 @@ export const getWindSpeed = (d: HourlyDataPoint) => d.windspeed_10m;
 export const bisectDate = bisector<{ time: string }, Date>((d) => parseISO(d.time)).left;
 
 // Constants
-export const MARGIN = { top: 60, right: 0, bottom: 40, left: 0 };
+export const MARGIN = { top: 60, right: 0, bottom: 40, left: 0 } as const;
