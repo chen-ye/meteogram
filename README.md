@@ -26,5 +26,7 @@ intuitive but high (temporal) resolution weather visualization.
 
 ## Notes
 
+- **Geocoding**: Uses Open-Meteo's Geocoding API for search, with IP-based
+  fallback (geojs.io) when browser geolocation is denied.
 - **PWA**: Installs as a live-refreshing PWA. Allegedly offline-capable.
 - **Deploy**: Static site compatible (GitHub Pages ready).
