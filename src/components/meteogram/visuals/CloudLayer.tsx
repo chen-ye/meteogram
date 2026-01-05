@@ -150,7 +150,8 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
                         width={9}
                         height={9}
                         fill={color}
-                        strokeWidth={0}
+                        color={color}
+                        strokeWidth={isSnow ? 2 : 0}
                         opacity={opacity}
                         data-part={isSnow ? "snow-flake" : "rain-droplet"}
                     />
