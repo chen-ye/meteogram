@@ -15,20 +15,52 @@ export const PrecipitationLayer: React.FC<PrecipitationLayerProps> = ({ hourlyDa
     return (
         <g data-part="precip-layer">
              {hourlyData.map(d => {
-                 const barH = yMax - (precipScale(getPrecip(d)) ?? yMax);
-                 if (barH <= 0) return null;
+                 const totalPrecip = getPrecip(d);
+                 if (totalPrecip <= 0) return null;
+
+                 const barTotalH = yMax - (precipScale(totalPrecip) ?? yMax);
+                 if (barTotalH <= 0) return null;
+
+                 // Calculate liquid vs solid portion
+                 // precipitation = rain + showers + snowfall (water equiv)
+                 const liquidPrecip = d.rain + d.showers;
+                 // liquid ratio capped at 1
+                 const liquidRatio = Math.min(1, Math.max(0, liquidPrecip / totalPrecip));
+                 const barLiquidH = barTotalH * liquidRatio;
+
+                 const x = (timeScale(getDate(d)) ?? 0) - 3;
+                 const yTotal = yMax - barTotalH;
+                 const yLiquid = yMax - barLiquidH;
+
                  return (
-                     <Bar
-                        key={`p-${d.time}`}
-                        x={(timeScale(getDate(d)) ?? 0) - 3}
-                        y={yMax - barH}
-                        width={6}
-                        height={barH}
-                        fill="#60a5fa"
-                        fillOpacity={0.3}
-                        rx={2}
-                        data-part="precip-bar"
-                     />
+                     <React.Fragment key={`p-${d.time}`}>
+                        {/* Snow Part (Rendered as full bar background, visible at top if liquid < total) */}
+                        <Bar
+                             x={x}
+                             y={yTotal}
+                             width={6}
+                             height={barTotalH}
+                             fill="#ffffff"
+                             fillOpacity={0.9}
+                             rx={2}
+                             data-part="precip-bar-snow"
+                        />
+                        {/* Rain Part (Overlay at bottom) */}
+                        {barLiquidH > 0 && (
+                            <Bar
+                                 x={x}
+                                 y={yLiquid}
+                                 width={6}
+                                 height={barLiquidH}
+                                 fill="#60a5fa"
+                                 fillOpacity={liquidRatio < 1 ? 0.9 : 0.3}
+
+                                 rx={2}
+                                 data-part="precip-bar-rain"
+                            />
+                        )}
+
+                     </React.Fragment>
                  )
              })}
         </g>

@@ -8,6 +8,9 @@ export interface WeatherData {
     time: string[];
     temperature_2m: number[];
     precipitation: number[];
+    rain: number[];
+    showers: number[];
+    snowfall: number[];
     weathercode: number[];
     cloudcover: number[];
     windspeed_10m: number[];
@@ -35,7 +38,7 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
   const params = {
     latitude: lat,
     longitude: lon,
-    hourly: 'temperature_2m,precipitation,weathercode,cloudcover,windspeed_10m,winddirection_10m,apparent_temperature,dewpoint_2m,pressure_msl',
+    hourly: 'temperature_2m,precipitation,rain,showers,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,apparent_temperature,dewpoint_2m,pressure_msl',
     daily: 'sunrise,sunset',
     current_weather: true,
     timezone: 'auto',

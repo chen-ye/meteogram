@@ -14,6 +14,9 @@ export interface HourlyDataPoint {
   apparent_temperature: number;
   dewpoint_2m: number;
   precipitation: number;
+  rain: number;
+  showers: number;
+  snowfall: number;
   cloudcover: number;
   windspeed_10m: number;
   winddirection_10m: number;

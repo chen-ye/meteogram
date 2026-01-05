@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Area } from '@visx/shape';
 import { curveMonotoneX } from '@visx/curve';
 import { parseISO, isAfter, isBefore } from 'date-fns';
-import { Droplet } from 'lucide-react';
+import { Droplet, Snowflake } from 'lucide-react';
 import { getDate, getCloud } from '../utils';
 import type { WeatherData } from '../../../api/weather';
 import type { HourlyDataPoint } from '../types';
@@ -133,17 +133,26 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
                  // Render droplets based on intensity
                  const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5);
 
+
+
+                 const isSnow = d.snowfall > 0 && d.snowfall > (d.rain + d.showers); // Comparison might be loose due to units, but reasonable heuristic.
+
+
+                 const Icon = isSnow ? Snowflake : Droplet;
+                 const color = isSnow ? "#ffffff" : "#60a5fa";
+                 const opacity = isSnow ? 0.9 : 0.8;
+
                  return dropletJitter[index].slice(0, numDroplets).map((jitter, j) => (
-                    <Droplet
+                    <Icon
                         key={`drop-${d.time}-${j}`}
                         x={x + jitter - 4.5}
                         y={cloudBottomY + 5 + (j * 11)}
                         width={9}
                         height={9}
-                        fill="#60a5fa"
+                        fill={color}
                         strokeWidth={0}
-                        opacity={0.8}
-                        data-part="rain-droplet"
+                        opacity={opacity}
+                        data-part={isSnow ? "snow-flake" : "rain-droplet"}
                     />
                  ));
              })}
