@@ -9,7 +9,7 @@ export const getDewPoint = (d: HourlyDataPoint) => d.dewpoint_2m;
 export const getPrecip = (d: HourlyDataPoint) => d.precipitation;
 export const getCloud = (d: HourlyDataPoint) => d.cloudcover;
 export const getWindSpeed = (d: HourlyDataPoint) => d.windspeed_10m;
-export const getSnowRatio = (d: HourlyDataPoint) => {
+export const getSnowRatio = (d: Pick<HourlyDataPoint, 'precipitation' | 'rain' | 'showers' | 'snowfall'>) => {
     if (d.precipitation <= 0) return 0;
     const liquid = d.rain + d.showers;
     return Math.max(0, Math.min(1, 1 - (liquid / d.precipitation)));

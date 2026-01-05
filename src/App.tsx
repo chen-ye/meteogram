@@ -6,12 +6,14 @@ import { LocationSearch } from './components/LocationSearch';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
-import { Droplet, Database, Wind } from 'lucide-react';
+import { Droplet, Database, Wind, Snowflake } from 'lucide-react';
 import { parseISO, addHours, formatDistanceToNow } from 'date-fns';
 import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
+import { getSnowRatio } from './components/meteogram/utils';
 
-// Helper to find next rain (within 24 hours)
-const getNextRain = (hourly: WeatherData['hourly']) => {
+
+// Helper to find next precipitation (within 24 hours)
+const getNextPrecip = (hourly: WeatherData['hourly']) => {
   const now = new Date();
   const limit = addHours(now, 24);
   const index = hourly.time.findIndex(t => new Date(t) > now);
@@ -22,7 +24,18 @@ const getNextRain = (hourly: WeatherData['hourly']) => {
     if (time > limit) break;
 
     if (hourly.precipitation[i] > 0) {
-      return { time: hourly.time[i], amount: hourly.precipitation[i] };
+       // We need to construct a partial data point for the utility
+       const d = {
+           precipitation: hourly.precipitation[i],
+           rain: hourly.rain?.[i] || 0,
+           showers: hourly.showers?.[i] || 0,
+           snowfall: hourly.snowfall?.[i] || 0,
+       };
+
+       const ratio = getSnowRatio(d);
+       const type = ratio > 0.5 ? 'snow' : 'rain';
+
+       return { time: hourly.time[i], amount: hourly.precipitation[i], type };
     }
   }
   return null;
@@ -125,7 +138,7 @@ function App() {
   }
 
   const current = weather.current_weather;
-  const nextRain = getNextRain(weather.hourly);
+  const nextPrecip = getNextPrecip(weather.hourly);
 
   // Apparent temp / Feels like
   // Find current hour index
@@ -192,7 +205,7 @@ function App() {
              </div>
 
              {/* Feels Like - Increased spacing */}
-             <div className="text-sm font-medium tracking-widest text-blue-200/60 uppercase mt-2 mb-6">
+             <div className={`text-sm font-medium tracking-widest text-blue-200/60 uppercase mt-2 mb-4 ${formatTemp(current.temperature, unitSystem) === formatTemp(apparentTemp, unitSystem) ? 'invisible' : ''}`}>
                 FEELS LIKE {formatTemp(apparentTemp, unitSystem)}°
              </div>
 
@@ -214,11 +227,11 @@ function App() {
                  </div>
              </div>
 
-             {/* Rain at specific time (Dynamic) - Condition Render */}
-             {nextRain && (
-               <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold tracking-wider uppercase mt-3">
-                  <Droplet className="w-3 h-3" />
-                  <span>Rain {formatDistanceToNow(parseISO(nextRain.time), { addSuffix: true })}</span>
+             {/* Rain/Snow at specific time (Dynamic) - Condition Render */}
+             {nextPrecip && (
+               <div className={`flex items-center gap-2 text-xs font-bold tracking-wider uppercase mt-3 ${nextPrecip.type === 'snow' ? 'text-white' : 'text-cyan-400'}`}>
+                  {nextPrecip.type === 'snow' ? <Snowflake className="w-3 h-3" /> : <Droplet className="w-3 h-3" />}
+                  <span>{nextPrecip.type === 'snow' ? 'Snow' : 'Rain'} {formatDistanceToNow(parseISO(nextPrecip.time), { addSuffix: true })}</span>
                </div>
              )}
 
