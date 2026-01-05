@@ -10,14 +10,33 @@ interface ChartDefsProps {
     height: number;
     hourlyData: HourlyDataPoint[];
     timeScale: ScaleTime<number, number>;
+    tempScale: ScaleLinear<number, number>;
     windSpeedScale: ScaleLinear<number, number>;
 }
 
-export const ChartDefs: React.FC<ChartDefsProps> = ({ width, height, hourlyData, timeScale, windSpeedScale }) => {
+export const ChartDefs: React.FC<ChartDefsProps> = ({ width, height, hourlyData, timeScale, tempScale, windSpeedScale }) => {
+    // Absolute Gradient Anchors (Celcius)
+    // 40°C = Hot (Amber), -10°C = Cold (Blue)
+    const yHot = tempScale(40) ?? 0;
+    const yCold = tempScale(-10) ?? height;
+
     return (
         <defs>
-            <LinearGradient id="temp-fill-gradient" from="#fbbf24" to="#3b82f6" fromOpacity={0.2} toOpacity={0.05} />
-            <LinearGradient id="temp-stroke-gradient" from="#fbbf24" to="#3b82f6" />
+            <LinearGradient
+                id="temp-fill-gradient"
+                gradientUnits="userSpaceOnUse"
+                x1={0} y1={yHot}
+                x2={0} y2={yCold}
+                from="#fbbf24" to="#3b82f6"
+                fromOpacity={0.2} toOpacity={0.05}
+            />
+            <LinearGradient
+                id="temp-stroke-gradient"
+                gradientUnits="userSpaceOnUse"
+                x1={0} y1={yHot}
+                x2={0} y2={yCold}
+                from="#fbbf24" to="#3b82f6"
+            />
             <LinearGradient id="dew-stroke-gradient" from="#22d3ee" to="#22d3ee" />
             <LinearGradient id="precip-gradient" from="#3b82f6" to="#3b82f6" fromOpacity={0.8} toOpacity={0.1} />
 

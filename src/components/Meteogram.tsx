@@ -98,6 +98,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
                 height={height}
                 hourlyData={hourlyData}
                 timeScale={timeScale}
+                tempScale={tempScale}
                 windSpeedScale={windSpeedScale}
             />
 
