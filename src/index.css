@@ -27,3 +27,12 @@ body {
   text-box-edge: cap alphabetic;
   -webkit-text-box-edge: cap alphabetic;
 }
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

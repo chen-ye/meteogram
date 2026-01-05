@@ -28,8 +28,6 @@ import { WindLayer } from './meteogram/visuals/WindLayer';
 export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
   // 1. Data Processing
   const hourlyData = useMeteogramData(data);
-  const scrollHintRef = React.useRef<HTMLDivElement>(null);
-  const viewportRef = React.useRef<HTMLDivElement>(null);
 
   // 2. Scales & Dimensions
   // Calculate content width for horizontal scrolling (preserve density of ~48h per screen)
@@ -54,23 +52,6 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
     scroll: true,
     detectBounds: true,
   });
-
-  React.useEffect(() => {
-    const viewport = viewportRef.current;
-    const hint = scrollHintRef.current;
-    if (!viewport || !hint) return;
-
-    const handleScroll = () => {
-      const opacity = Math.max(0, 1 - viewport.scrollLeft / 50);
-      hint.style.opacity = opacity.toString();
-    };
-
-    // Initial check
-    handleScroll();
-
-    viewport.addEventListener('scroll', handleScroll, { passive: true });
-    return () => viewport.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // 4. Interaction Handler
   const handlePointerMove = useCallback(
@@ -98,10 +79,13 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
   if (width < 10) return null;
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" style={{ timelineScope: '--chart-scroll' }}>
       <div
-        ref={viewportRef}
         className="relative w-full h-full overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar"
+        style={{
+            scrollTimelineName: '--chart-scroll',
+            scrollTimelineAxis: 'inline'
+        }}
       >
         <div
             ref={containerRef}
@@ -265,15 +249,24 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
             </TooltipInPortal>
           )}
         </div>
+
       </div>
 
-       {/* Scroll Hint */}
-       <div
-           ref={scrollHintRef}
-           className="absolute bottom-3 right-4 text-[10px] uppercase tracking-widest text-white/30 font-semibold pointer-events-none"
-       >
-           Drag to scroll &rarr;
-       </div>
+      {/* Scroll Hint */}
+      <div
+          className="absolute bottom-3 right-4 text-[10px] uppercase tracking-widest text-white/30 font-semibold pointer-events-none"
+          style={{
+              animationName: 'fade-out',
+              animationDuration: '1ms',
+              animationTimingFunction: 'linear',
+              animationIterationCount: '1',
+              animationFillMode: 'both',
+              animationTimeline: '--chart-scroll',
+              animationRange: '0 64px'
+          }}
+      >
+          Drag to scroll &rarr;
+      </div>
     </div>
   );
 }

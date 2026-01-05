@@ -6,7 +6,7 @@ import { LocationSearch } from './components/LocationSearch';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
-import { Droplet, MapPin, Clock, Database, Wind } from 'lucide-react';
+import { Droplet, MapPin, Database, Wind } from 'lucide-react';
 import { parseISO, addHours, formatDistanceToNow } from 'date-fns';
 import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
 
@@ -150,6 +150,7 @@ function App() {
                     onLocationSelect={(lat, lon) => updateLocationUrl(lat, lon)}
                     onLocateMe={() => updateLocationUrl()}
                     isLocating={isLocating}
+                    currentLocationName={manualLocation ? (locationName ? locationName.toUpperCase() : 'COORDINATES') : (locationName ? locationName.toUpperCase() : 'LOCATING...')}
                  />
 
                  {/* Unit Switcher */}
@@ -202,14 +203,7 @@ function App() {
 
              {/* Meta data row */}
              <div className="flex items-center gap-3 text-blue-200/60 text-xs font-semibold tracking-widest uppercase">
-                 <div className="flex items-center gap-1.5">
-                     <MapPin className="w-3 h-3 text-blue-200/40" />
-                     <span>{manualLocation ? (locationName ? locationName.toUpperCase() : 'COORDINATES') : (locationName ? locationName.toUpperCase() : 'LOCATING...')}</span>
-                 </div>
-                 <div className="flex items-center gap-1.5">
-                    <Clock className="w-3 h-3 text-blue-200/40" />
-                    <span>right now</span>
-                 </div>
+
                  <div className="flex items-center gap-1.5">
                      <Wind className="w-3 h-3 text-blue-200/40" />
                      <span>{formatSpeed(current.windspeed, unitSystem)} {getUnitLabel('speed', unitSystem)}</span>

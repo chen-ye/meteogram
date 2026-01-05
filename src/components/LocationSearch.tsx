@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Loader2 } from 'lucide-react';
+import { MapPin, Loader2, Locate } from 'lucide-react';
 import { searchLocations, type GeocodingResult } from '../hooks/useGeocoding';
 
 interface LocationSearchProps {
   onLocationSelect: (lat: number, lon: number) => void;
   onLocateMe: () => void;
   isLocating: boolean;
+  currentLocationName: string;
 }
 
-export function LocationSearch({ onLocationSelect, onLocateMe, isLocating }: LocationSearchProps) {
+export function LocationSearch({ onLocationSelect, onLocateMe, isLocating, currentLocationName }: LocationSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GeocodingResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -57,14 +58,14 @@ export function LocationSearch({ onLocationSelect, onLocateMe, isLocating }: Loc
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search city..."
-          className="h-full pl-8 pr-3 py-1 bg-blue-950/20 backdrop-blur-sm border border-white/5 rounded-lg text-xs font-medium text-white placeholder:text-blue-200/30 w-full md:w-32 md:focus:w-48 transition-all duration-300 outline-none focus:bg-blue-950/40 focus:border-white/10"
+          placeholder={currentLocationName || "Search city..."}
+          className="h-full pl-8 pr-3 py-1 bg-blue-950/20 backdrop-blur-sm border border-white/5 rounded-lg text-xs font-medium text-white placeholder:text-blue-200/30 w-full md:field-sizing-content [interpolate-size:allow-keywords] md:w-auto md:focus:w-48 transition-all duration-300 outline-none focus:bg-blue-950/40 focus:border-white/10"
           onFocus={() => {
               if (results.length > 0) setIsOpen(true);
           }}
         />
         <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none text-blue-200/40 group-focus-within:text-white/60 transition-colors">
-            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MapPin className="w-3.5 h-3.5" />}
         </div>
 
         {/* Dropdown Results */}
@@ -97,7 +98,7 @@ export function LocationSearch({ onLocationSelect, onLocateMe, isLocating }: Loc
         title="Use my location"
         className="h-full px-2 flex items-center justify-center bg-blue-950/20 backdrop-blur-sm border border-white/5 rounded-lg text-blue-200/40 hover:text-white hover:bg-blue-950/40 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
       >
-        <MapPin className={`w-3.5 h-3.5 ${isLocating ? 'animate-bounce' : ''}`} />
+        <Locate className={`w-3.5 h-3.5 ${isLocating ? 'animate-bounce' : ''}`} />
       </button>
     </div>
   );
