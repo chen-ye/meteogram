@@ -2,7 +2,9 @@
 
 A [meteogram](https://en.wikipedia.org/wiki/Meteogram)-style weather PWA,
 heavily inspired by [Weathergram](https://weathergram.io). Designed for
-intuitive but high (temporal) resolution weather content consumption.
+intuitive but high (temporal) resolution weather visualization.
+
+✨Vibecoded✨, mostly
 
 ## Architecture
 
