@@ -3,7 +3,7 @@ import { Area } from '@visx/shape';
 import { curveMonotoneX } from '@visx/curve';
 import { parseISO, isAfter, isBefore } from 'date-fns';
 import { Droplet, Snowflake } from 'lucide-react';
-import { getDate, getCloud } from '../utils';
+import { getDate, getCloud, getSnowRatio, getSeedFromString, seededRandom } from '../utils';
 import type { WeatherData } from '../../../api/weather';
 import type { HourlyDataPoint } from '../types';
 import type { ScaleTime, ScaleLinear } from 'd3-scale';
@@ -96,11 +96,31 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
     }, [hourlyData, dailyData, timeScale, cloudCenterY, xMax]);
 
 
-    // Pre-calculate jitter to avoid side-effects in render
-    const dropletJitter = useMemo(() => {
+    // Pre-calculate jitter and types to avoid side-effects in render
+    const particles = useMemo(() => {
         return hourlyData.map((d) => {
              const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5);
-             return Array.from({length: numDroplets}).map(() => Math.random() * 10 - 5);
+             const snowRatio = getSnowRatio(d);
+             const numSnow = Math.round(numDroplets * snowRatio);
+
+             // Seed rng with time string
+             const seed = getSeedFromString(d.time);
+             const rng = seededRandom(seed);
+
+             // Create array of types (true = snow, false = rain)
+             const types = Array(numDroplets).fill(false);
+             for(let k=0; k<numSnow; k++) types[k] = true;
+
+             // Shuffle types deterministically
+             for (let k = types.length - 1; k > 0; k--) {
+                const r = Math.floor(rng() * (k + 1));
+                [types[k], types[r]] = [types[r], types[k]];
+             }
+
+             return Array.from({length: numDroplets}).map((_, idx) => ({
+                 xOffset: rng() * 10 - 5,
+                 isSnow: types[idx]
+             }));
         });
     }, [hourlyData]);
 
@@ -124,38 +144,34 @@ export const CloudLayer: React.FC<CloudLayerProps> = ({ hourlyData, dailyData, t
              {/* Sunny Pills */}
              {sunnyPills}
 
-             {/* Rain Droplets under Cloud */}
+             {/* Droplets under Cloud */}
              {hourlyData.map((d, index) => {
                  if (d.precipitation <= 0) return null;
                  const x = timeScale(getDate(d)) ?? 0;
                  const cloudBottomY = cloudCenterY + (cloudScale(getCloud(d)) ?? 0);
-
-                 // Render droplets based on intensity
                  const numDroplets = Math.min(Math.ceil(d.precipitation * 2), 5);
 
+                 return particles[index].slice(0, numDroplets).map((p, j) => {
+                   const Icon = p.isSnow ? Snowflake : Droplet;
+                   const color = p.isSnow ? "#ffffff" : "#60a5fa";
+                   const opacity = p.isSnow ? 0.9 : 0.8;
+                   const size = 9;
 
-
-                 const isSnow = d.snowfall > 0 && d.snowfall > (d.rain + d.showers); // Comparison might be loose due to units, but reasonable heuristic.
-
-
-                 const Icon = isSnow ? Snowflake : Droplet;
-                 const color = isSnow ? "#ffffff" : "#60a5fa";
-                 const opacity = isSnow ? 0.9 : 0.8;
-
-                 return dropletJitter[index].slice(0, numDroplets).map((jitter, j) => (
-                    <Icon
-                        key={`drop-${d.time}-${j}`}
-                        x={x + jitter - 4.5}
-                        y={cloudBottomY + 5 + (j * 11)}
-                        width={9}
-                        height={9}
-                        fill={color}
-                        color={color}
-                        strokeWidth={isSnow ? 2 : 0}
-                        opacity={opacity}
-                        data-part={isSnow ? "snow-flake" : "rain-droplet"}
-                    />
-                 ));
+                    return (
+                        <Icon
+                            key={`drop-${d.time}-${j}`}
+                            x={x + p.xOffset - size / 2}
+                            y={cloudBottomY + 5 + (j * 11)}
+                            width={size}
+                            height={size}
+                            fill={color}
+                            color={color}
+                            strokeWidth={p.isSnow ? 1.5 : 0}
+                            opacity={opacity}
+                            data-part={p.isSnow ? "snow-flake" : "rain-droplet"}
+                        />
+                    );
+                 });
              })}
         </g>
     );

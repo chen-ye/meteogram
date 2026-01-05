@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bar } from '@visx/shape';
-import { getDate, getPrecip } from '../utils';
+import { getDate, getPrecip, getSnowRatio } from '../utils';
 import type { HourlyDataPoint } from '../types';
 import type { ScaleTime, ScaleLinear } from 'd3-scale';
 
@@ -22,10 +22,8 @@ export const PrecipitationLayer: React.FC<PrecipitationLayerProps> = ({ hourlyDa
                  if (barTotalH <= 0) return null;
 
                  // Calculate liquid vs solid portion
-                 // precipitation = rain + showers + snowfall (water equiv)
-                 const liquidPrecip = d.rain + d.showers;
-                 // liquid ratio capped at 1
-                 const liquidRatio = Math.min(1, Math.max(0, liquidPrecip / totalPrecip));
+                 const snowRatio = getSnowRatio(d);
+                 const liquidRatio = 1 - snowRatio;
                  const barLiquidH = barTotalH * liquidRatio;
 
                  const x = (timeScale(getDate(d)) ?? 0) - 3;
