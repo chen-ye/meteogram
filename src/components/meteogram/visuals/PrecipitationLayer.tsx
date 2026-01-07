@@ -51,7 +51,7 @@ export const PrecipitationLayer: React.FC<PrecipitationLayerProps> = ({ hourlyDa
                                  width={6}
                                  height={barLiquidH}
                                  fill="#60a5fa"
-                                 fillOpacity={liquidRatio < 1 ? 0.9 : 0.3}
+                                 fillOpacity={0.9}
 
                                  rx={2}
                                  data-part="precip-bar-rain"
