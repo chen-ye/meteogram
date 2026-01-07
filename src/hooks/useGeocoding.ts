@@ -5,7 +5,9 @@ interface GeocodingResponse {
   locality?: string;
   principalSubdivision?: string;
   countryName?: string;
+  countryCode?: string;
 }
+
 
 const fetchLocationName = async (lat: number, lon: number) => {
   // Using BigDataCloud's free client-side reverse geocoding API which supports CORS
@@ -47,6 +49,7 @@ export function useGeocoding(lat?: number, lon?: number) {
     locationName: data?.city || data?.locality || data?.principalSubdivision,
     admin1: data?.principalSubdivision,
     country: data?.countryName,
+    countryCode: data?.countryCode,
     isLoading,
     isError: error,
   };

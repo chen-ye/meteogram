@@ -33,3 +33,10 @@ export const getWindDirection = (degrees: number): string => {
     const index = Math.round(degrees / 22.5) % 16;
     return directions[index];
 };
+
+export const inferUnitSystem = (countryCode?: string): UnitSystem => {
+    if (!countryCode) return 'metric';
+    // US, Liberia (LR), Myanmar (MM) use Imperial (mostly)
+    const imperialCountries = ['US', 'LR', 'MM'];
+    return imperialCountries.includes(countryCode.toUpperCase()) ? 'imperial' : 'metric';
+};

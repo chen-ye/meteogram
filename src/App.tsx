@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from './hooks/useLocation';
 import { useWeather } from './hooks/useWeather';
 import { useGeocoding } from './hooks/useGeocoding';
@@ -7,7 +7,7 @@ import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
 import { Database, Wind } from 'lucide-react';
-import { formatTemp, formatSpeed, getUnitLabel, getWindDirection, type UnitSystem } from './utils/units';
+import { formatTemp, formatSpeed, getUnitLabel, getWindDirection, inferUnitSystem, type UnitSystem } from './utils/units';
 import { NextPrecipIndicator } from './components/NextPrecipIndicator';
 
 // Helper for WMO description (if needed locally, or re-export from utils)
@@ -64,8 +64,24 @@ function App() {
   };
 
   const { weather, isLoading, isError } = useWeather(activeLocation?.latitude, activeLocation?.longitude);
-  const { locationName } = useGeocoding(activeLocation?.latitude, activeLocation?.longitude);
+  const { locationName, countryCode } = useGeocoding(activeLocation?.latitude, activeLocation?.longitude);
 
+  // Track if units were explicitly provided in URL on mount
+  const hasInitialUnits = useRef(new URLSearchParams(window.location.search).has('units'));
+  const hasInferred = useRef(false);
+
+  useEffect(() => {
+     // If units were NOT explicitly set in URL on mount, infer from country
+     // Only do this once to allow user to manually override later
+     if (!hasInitialUnits.current && countryCode && !hasInferred.current) {
+        const inferred = inferUnitSystem(countryCode);
+        if (inferred !== unitSystem) {
+            setUnitSystem(inferred);
+        }
+        hasInferred.current = true;
+     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countryCode]);
 
 
   if (!activeLocation && isLocating) {
