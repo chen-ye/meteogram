@@ -34,34 +34,70 @@ export interface WeatherData {
 
 const URL = "https://api.open-meteo.com/v1/forecast";
 
+const PARAMS_BASE = {
+  hourly: [
+    "temperature_2m",
+    "precipitation",
+    "rain",
+    "showers",
+    "snowfall",
+    "weathercode",
+    "cloudcover",
+    "windspeed_10m",
+    "winddirection_10m",
+    "apparent_temperature",
+    "dewpoint_2m",
+    "pressure_msl"
+  ],
+  daily: ["sunrise", "sunset"],
+  current: [
+    "temperature_2m",
+    "wind_speed_10m",
+    "wind_direction_10m",
+    "weather_code",
+    "wind_gusts_10m"
+  ],
+  timezone: "auto",
+  forecast_days: 5,
+};
+
+// Main export - currently hardcoded to use JSON client
 export async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
+  return fetchWeatherJson(lat, lon);
+}
+
+// JSON Client Implementation (Native Fetch)
+export async function fetchWeatherJson(lat: number, lon: number): Promise<WeatherData> {
   const params = {
     latitude: lat,
     longitude: lon,
-    hourly: [
-      "temperature_2m",
-      "precipitation",
-      "rain",
-      "showers",
-      "snowfall",
-      "weathercode",
-      "cloudcover",
-      "windspeed_10m",
-      "winddirection_10m",
-      "apparent_temperature",
-      "dewpoint_2m",
-      "pressure_msl"
-    ],
-    daily: ["sunrise", "sunset"],
-    current: [
-      "temperature_2m",
-      "wind_speed_10m",
-      "wind_direction_10m",
-      "weather_code",
-      "wind_gusts_10m"
-    ],
-    timezone: "auto",
-    forecast_days: 5,
+    ...PARAMS_BASE
+  };
+
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      searchParams.append(key, value.join(","));
+    } else {
+      searchParams.append(key, String(value));
+    }
+  }
+
+  const response = await fetch(`${URL}?${searchParams.toString()}`);
+
+  if (!response.ok) {
+    throw new Error(`Weather API Error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// FlatBuffers Client Implementation
+export async function fetchWeatherFlatBuffers(lat: number, lon: number): Promise<WeatherData> {
+  const params = {
+    latitude: lat,
+    longitude: lon,
+    ...PARAMS_BASE
   };
 
   const responses = await fetchWeatherApi(URL, params);
