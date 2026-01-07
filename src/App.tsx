@@ -238,13 +238,15 @@ function App() {
           </div>
        </header>
 
-       <main className="flex-1 w-full relative mt-auto flex flex-col">
-          <div className="flex-1 w-full min-h-[350px] relative flex flex-col">
-             <ParentSize className="w-full h-full flex-1">
-               {({ width, height }: { width: number; height: number }) => (
-                 <Meteogram data={weather} width={width} height={height} unitSystem={unitSystem} />
-               )}
-             </ParentSize>
+       <main className="flex-1 w-full relative mt-auto flex flex-col min-h-0">
+          <div className="flex-1 w-full min-h-[350px] relative overflow-hidden">
+             <div className="absolute inset-0">
+                 <ParentSize className="w-full h-full">
+                   {({ width, height }: { width: number; height: number }) => (
+                     <Meteogram data={weather} width={width} height={height} unitSystem={unitSystem} />
+                   )}
+                 </ParentSize>
+             </div>
           </div>
        </main>
     </div>
