@@ -7,7 +7,7 @@ import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
 import { getWeatherDescription } from './utils/weatherCodes';
 import { Database, Wind } from 'lucide-react';
-import { formatTemp, formatSpeed, getUnitLabel, type UnitSystem } from './utils/units';
+import { formatTemp, formatSpeed, getUnitLabel, getWindDirection, type UnitSystem } from './utils/units';
 import { NextPrecipIndicator } from './components/NextPrecipIndicator';
 
 // Helper for WMO description (if needed locally, or re-export from utils)
@@ -182,12 +182,20 @@ function App() {
                 {getWmoDescription(current.weathercode)} now.
              </div>
 
-             {/* Meta data row */}
+             {/* Metadata row */}
              <div className="flex items-center gap-3 text-blue-200/60 text-xs font-semibold tracking-widest uppercase">
 
                  <div className="flex items-center gap-1.5">
                      <Wind className="w-3 h-3 text-blue-200/40" />
-                     <span>{formatSpeed(current.windspeed, unitSystem)} {getUnitLabel('speed', unitSystem)}</span>
+                     <span>
+                        {formatSpeed(current.windspeed, unitSystem)}
+                        {' '}{getUnitLabel('speed', unitSystem)}{' '}
+                        {getWindDirection(current.winddirection)}
+                        {current.windgusts && current.windgusts > current.windspeed && (
+                           <span className="opacity-60 ml-1">(Gusts {formatSpeed(current.windgusts, unitSystem)}
+                           {' '}{getUnitLabel('speed', unitSystem)})</span>
+                        )}
+                     </span>
                  </div>
                  <div className="flex items-center gap-1.5">
                     <Database className="w-3 h-3 text-blue-200/40" />

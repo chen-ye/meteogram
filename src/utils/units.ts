@@ -27,3 +27,9 @@ export const getUnitLabel = (type: 'temp' | 'speed' | 'precip', system: UnitSyst
     case 'precip': return system === 'imperial' ? 'in' : 'mm';
   }
 };
+
+export const getWindDirection = (degrees: number): string => {
+    const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    const index = Math.round(degrees / 22.5) % 16;
+    return directions[index];
+};
