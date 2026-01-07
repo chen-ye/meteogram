@@ -5,12 +5,15 @@ import { curveMonotoneX } from '@visx/curve';
 import { getDate, getWindSpeed } from '../utils';
 import type { HourlyDataPoint } from '../types';
 import type { ScaleTime, ScaleLinear } from 'd3-scale';
+import { Navigation2 } from 'lucide-react';
 
 interface WindLayerProps {
     hourlyData: HourlyDataPoint[];
     timeScale: ScaleTime<number, number>;
     windSpeedScale: ScaleLinear<number, number>;
 }
+
+const ICON_SIZE = 12;
 
 export const WindLayer: React.FC<WindLayerProps> = ({ hourlyData, timeScale, windSpeedScale }) => {
     return (
@@ -38,7 +41,7 @@ export const WindLayer: React.FC<WindLayerProps> = ({ hourlyData, timeScale, win
                      <Group key={`w-${d.time}`} top={y} left={x} data-part="wind-arrow">
                          {/* Rotate arrow to point with wind direction */}
                          <g transform={`rotate(${d.winddirection_10m + 180})`}>
-                              <path d="M0,4 L3,-4 L0,-2 L-3,-4 Z" fill="#ef4444" />
+                              <Navigation2 size={ICON_SIZE} color="#ef4444" fill="#ef4444" style={{ transform: `translate(-${ICON_SIZE / 2}px, -${ICON_SIZE / 2}px)` }} />
                          </g>
                      </Group>
                  )

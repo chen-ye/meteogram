@@ -47,7 +47,7 @@ export const ChartDefs: React.FC<ChartDefsProps> = ({ width, height, hourlyData,
                      if (i % 2 !== 0) return null;
                      const x = timeScale(getDate(d)) ?? 0;
                      const y = windSpeedScale(getWindSpeed(d)) ?? 0;
-                     return <circle key={`mask-${i}`} cx={x} cy={y} r={8} fill="black" data-part="wind-mask-circle" />;
+                     return <circle key={`mask-${i}`} cx={x} cy={y} r={10} fill="black" data-part="wind-mask-circle" />;
                 })}
             </mask>
         </defs>
