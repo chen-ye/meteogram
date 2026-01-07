@@ -106,12 +106,12 @@ function App() {
      );
   }
 
-  const current = weather.current_weather;
+  const current = weather.current;
 
   // Apparent temp / Feels like
   // Find current hour index
   const curIndex = weather.hourly.time.findIndex(t => t === current.time);
-  const apparentTemp = curIndex !== -1 ? weather.hourly.apparent_temperature[curIndex] : current.temperature;
+  const apparentTemp = curIndex !== -1 ? weather.hourly.apparent_temperature[curIndex] : current.temperature_2m;
 
 
   return (
@@ -163,7 +163,7 @@ function App() {
              {/* Big Thin Temp with aligned unit */}
              <div className="flex items-start">
                  <h1 className="text-[7rem] md:text-[8rem] leading-none font-thin tracking-tighter text-white text-box-trim-cap">
-                    {formatTemp(current.temperature, unitSystem)}
+                    {formatTemp(current.temperature_2m, unitSystem)}
                  </h1>
                  <div className="flex">
                     <span className="text-3xl md:text-4xl font-light text-blue-100/90 text-box-trim-cap">
@@ -173,13 +173,13 @@ function App() {
              </div>
 
              {/* Feels Like - Increased spacing */}
-             <div className={`text-sm font-medium tracking-widest text-blue-200/60 uppercase mt-2 mb-4 ${formatTemp(current.temperature, unitSystem) === formatTemp(apparentTemp, unitSystem) ? 'invisible' : ''}`}>
+             <div className={`text-sm font-medium tracking-widest text-blue-200/60 uppercase mt-2 mb-4 ${formatTemp(current.temperature_2m, unitSystem) === formatTemp(apparentTemp, unitSystem) ? 'invisible' : ''}`}>
                 FEELS LIKE {formatTemp(apparentTemp, unitSystem)}°
              </div>
 
              {/* Condition Text - Large, readable */}
              <div className="text-3xl md:text-5xl font-light leading-tight text-white/95 max-w-lg tracking-tight mb-4">
-                {getWmoDescription(current.weathercode)} now.
+                {getWmoDescription(current.weather_code)} now.
              </div>
 
              {/* Metadata row */}
@@ -188,11 +188,11 @@ function App() {
                  <div className="flex items-center gap-1.5">
                      <Wind className="w-3 h-3 text-blue-200/40" />
                      <span>
-                        {formatSpeed(current.windspeed, unitSystem)}
+                        {formatSpeed(current.wind_speed_10m, unitSystem)}
                         {' '}{getUnitLabel('speed', unitSystem)}{' '}
-                        {getWindDirection(current.winddirection)}
-                        {current.windgusts && current.windgusts > current.windspeed && (
-                           <span className="opacity-60 ml-1">(Gusts {formatSpeed(current.windgusts, unitSystem)}
+                        {getWindDirection(current.wind_direction_10m)}
+                        {current.wind_gusts_10m && current.wind_gusts_10m > current.wind_speed_10m && (
+                           <span className="opacity-60 ml-1">(Gusts {formatSpeed(current.wind_gusts_10m, unitSystem)}
                            {' '}{getUnitLabel('speed', unitSystem)})</span>
                         )}
                      </span>

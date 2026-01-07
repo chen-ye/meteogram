@@ -24,13 +24,13 @@ export interface WeatherData {
     sunrise: string[];
     sunset: string[];
   };
-  current_weather: {
-    temperature: number;
-    windspeed: number;
-    winddirection: number;
-    weathercode: number;
+  current: {
+    temperature_2m: number;
+    wind_speed_10m: number;
+    wind_direction_10m: number;
+    weather_code: number;
     time: string;
-    windgusts?: number;
+    wind_gusts_10m?: number;
   };
   utc_offset_seconds: number;
 }
@@ -46,23 +46,6 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
     forecast_days: 5,
   };
 
-  const response = await axios.get(BASE_URL, { params });
-
-  // Transform new "current" format to match our existing structure or update structure
-  // OpenMeteo's 'current_weather=true' is legacy. 'current=...' returns a 'current' object.
-  // We should switch to utilizing the 'current' object properly or stick to legacy if easier.
-  // Legacy 'current_weather' doesn't support gusts easily. Let's switch to 'current'.
-
-  const data = response.data;
-  return {
-      ...data,
-      current_weather: {
-          temperature: data.current.temperature_2m,
-          windspeed: data.current.wind_speed_10m,
-          winddirection: data.current.wind_direction_10m,
-          weathercode: data.current.weather_code,
-          time: data.current.time,
-          windgusts: data.current.wind_gusts_10m
-      }
-  };
+  const response = await axios.get<WeatherData>(BASE_URL, { params });
+  return response.data;
 }
