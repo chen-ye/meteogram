@@ -1,4 +1,3 @@
-
 import type { ReactNode } from 'react';
 
 interface FullScreenMessageProps {
@@ -8,7 +7,7 @@ interface FullScreenMessageProps {
 export function FullScreenMessage({ children }: FullScreenMessageProps) {
   // standardized background to match the "dark" feel but consistent classes
   return (
-    <div className="flex h-screen items-center justify-center bg-slate-900 text-white font-sans p-4 text-center">
+    <div className="flex h-screen items-center justify-center bg-slate-900 p-4 text-center font-sans text-white">
       {children}
     </div>
   );

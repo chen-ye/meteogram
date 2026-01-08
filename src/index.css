@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-background: #0f172a;
@@ -36,7 +36,6 @@ body {
     opacity: 0;
   }
 }
-
 
 @media (pointer: fine) {
   .touch-only {

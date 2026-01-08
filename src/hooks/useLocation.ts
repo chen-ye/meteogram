@@ -29,7 +29,7 @@ export function useLocation() {
         // If both fail, keep the original browser error or a generic one
 
         if (err instanceof Error) {
-            console.error("IP fallback failed:", err.message);
+          console.error('IP fallback failed:', err.message);
         }
       } finally {
         setLoading(false);
@@ -43,9 +43,9 @@ export function useLocation() {
     }
 
     const options: PositionOptions = {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 1000 * 60 * 5
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 1000 * 60 * 5,
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -61,23 +61,21 @@ export function useLocation() {
         // Browser location failed, try IP fallback
         let msg = err.message;
         if (err.code === err.TIMEOUT) {
-            msg = "Location request timed out. Trying IP location...";
+          msg = 'Location request timed out. Trying IP location...';
         } else if (err.code === err.PERMISSION_DENIED) {
-            msg = "Location permission denied. Using IP location...";
+          msg = 'Location permission denied. Using IP location...';
         }
 
         // Don't set error yet, strictly; wait for IP fallback
 
-
-
         console.warn(msg);
         fetchIpLocation().catch(() => {
-            // If IP also fails, set the final error
-            setError(msg || "Unable to retrieve location.");
-            setLoading(false);
+          // If IP also fails, set the final error
+          setError(msg || 'Unable to retrieve location.');
+          setLoading(false);
         });
       },
-      options
+      options,
     );
   }, []);
 

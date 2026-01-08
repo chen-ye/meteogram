@@ -32,32 +32,32 @@ export interface WeatherData {
   utc_offset_seconds: number;
 }
 
-const URL = "https://api.open-meteo.com/v1/forecast";
+const URL = 'https://api.open-meteo.com/v1/forecast';
 
 const PARAMS_BASE = {
   hourly: [
-    "temperature_2m",
-    "precipitation",
-    "rain",
-    "showers",
-    "snowfall",
-    "weathercode",
-    "cloudcover",
-    "windspeed_10m",
-    "winddirection_10m",
-    "apparent_temperature",
-    "dewpoint_2m",
-    "pressure_msl"
+    'temperature_2m',
+    'precipitation',
+    'rain',
+    'showers',
+    'snowfall',
+    'weathercode',
+    'cloudcover',
+    'windspeed_10m',
+    'winddirection_10m',
+    'apparent_temperature',
+    'dewpoint_2m',
+    'pressure_msl',
   ],
-  daily: ["sunrise", "sunset"],
+  daily: ['sunrise', 'sunset'],
   current: [
-    "temperature_2m",
-    "wind_speed_10m",
-    "wind_direction_10m",
-    "weather_code",
-    "wind_gusts_10m"
+    'temperature_2m',
+    'wind_speed_10m',
+    'wind_direction_10m',
+    'weather_code',
+    'wind_gusts_10m',
   ],
-  timezone: "auto",
+  timezone: 'auto',
   forecast_days: 5,
 };
 
@@ -71,13 +71,13 @@ export async function fetchWeatherJson(lat: number, lon: number): Promise<Weathe
   const params = {
     latitude: lat,
     longitude: lon,
-    ...PARAMS_BASE
+    ...PARAMS_BASE,
   };
 
   const searchParams = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (Array.isArray(value)) {
-      searchParams.append(key, value.join(","));
+      searchParams.append(key, value.join(','));
     } else {
       searchParams.append(key, String(value));
     }
@@ -97,7 +97,7 @@ export async function fetchWeatherFlatBuffers(lat: number, lon: number): Promise
   const params = {
     latitude: lat,
     longitude: lon,
-    ...PARAMS_BASE
+    ...PARAMS_BASE,
   };
 
   const responses = await fetchWeatherApi(URL, params);
@@ -110,8 +110,8 @@ export async function fetchWeatherFlatBuffers(lat: number, lon: number): Promise
 
   const weatherData: WeatherData = {
     hourly: {
-      time: range(Number(hourly.time()), Number(hourly.timeEnd()), hourly.interval()).map(
-        (t) => new Date((t + utcOffsetSeconds) * 1000).toISOString()
+      time: range(Number(hourly.time()), Number(hourly.timeEnd()), hourly.interval()).map((t) =>
+        new Date((t + utcOffsetSeconds) * 1000).toISOString(),
       ),
       temperature_2m: Array.from(hourly.variables(0)!.valuesArray()!),
       precipitation: Array.from(hourly.variables(1)!.valuesArray()!),
@@ -127,14 +127,14 @@ export async function fetchWeatherFlatBuffers(lat: number, lon: number): Promise
       pressure_msl: Array.from(hourly.variables(11)!.valuesArray()!),
     },
     daily: {
-      time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
-        (t) => new Date((t + utcOffsetSeconds) * 1000).toISOString()
+      time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map((t) =>
+        new Date((t + utcOffsetSeconds) * 1000).toISOString(),
       ),
       sunrise: extractInt64Array(daily.variables(0)!).map((t) =>
-        new Date((Number(t) + utcOffsetSeconds) * 1000).toISOString()
+        new Date((Number(t) + utcOffsetSeconds) * 1000).toISOString(),
       ),
       sunset: extractInt64Array(daily.variables(1)!).map((t) =>
-        new Date((Number(t) + utcOffsetSeconds) * 1000).toISOString()
+        new Date((Number(t) + utcOffsetSeconds) * 1000).toISOString(),
       ),
     },
     current: {

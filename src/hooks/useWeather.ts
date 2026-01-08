@@ -7,8 +7,8 @@ export function useWeather(lat?: number, lon?: number) {
     lat && lon ? ['weather', lat, lon] : null,
     () => fetchWeather(lat!, lon!),
     {
-      refreshInterval: 900000 // 15 minutes
-    }
+      refreshInterval: 900000, // 15 minutes
+    },
   );
 
   return {

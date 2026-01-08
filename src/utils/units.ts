@@ -22,21 +22,41 @@ export const formatPrecip = (mm: number, system: UnitSystem) => {
 
 export const getUnitLabel = (type: 'temp' | 'speed' | 'precip', system: UnitSystem) => {
   switch (type) {
-    case 'temp': return system === 'imperial' ? '°F' : '°C';
-    case 'speed': return system === 'imperial' ? 'mph' : 'km/h';
-    case 'precip': return system === 'imperial' ? 'in' : 'mm';
+    case 'temp':
+      return system === 'imperial' ? '°F' : '°C';
+    case 'speed':
+      return system === 'imperial' ? 'mph' : 'km/h';
+    case 'precip':
+      return system === 'imperial' ? 'in' : 'mm';
   }
 };
 
 export const getWindDirection = (degrees: number): string => {
-    const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-    const index = Math.round(degrees / 22.5) % 16;
-    return directions[index];
+  const directions = [
+    'N',
+    'NNE',
+    'NE',
+    'ENE',
+    'E',
+    'ESE',
+    'SE',
+    'SSE',
+    'S',
+    'SSW',
+    'SW',
+    'WSW',
+    'W',
+    'WNW',
+    'NW',
+    'NNW',
+  ];
+  const index = Math.round(degrees / 22.5) % 16;
+  return directions[index];
 };
 
 export const inferUnitSystem = (countryCode?: string): UnitSystem => {
-    if (!countryCode) return 'metric';
-    // US, Liberia (LR), Myanmar (MM) use Imperial (mostly)
-    const imperialCountries = ['US', 'LR', 'MM'];
-    return imperialCountries.includes(countryCode.toUpperCase()) ? 'imperial' : 'metric';
+  if (!countryCode) return 'metric';
+  // US, Liberia (LR), Myanmar (MM) use Imperial (mostly)
+  const imperialCountries = ['US', 'LR', 'MM'];
+  return imperialCountries.includes(countryCode.toUpperCase()) ? 'imperial' : 'metric';
 };

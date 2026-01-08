@@ -8,10 +8,11 @@ interface GeocodingResponse {
   countryCode?: string;
 }
 
-
 const fetchLocationName = async (lat: number, lon: number) => {
   // Using BigDataCloud's free client-side reverse geocoding API which supports CORS
-  const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+  const res = await fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
+  );
   if (!res.ok) throw new Error('Failed to fetch location name');
   return res.json();
 };
@@ -33,7 +34,9 @@ export const searchLocations = async (query: string): Promise<GeocodingResult[]>
 
   if (searchTerm.length < 2) return [];
 
-  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=10&language=en&format=json`);
+  const res = await fetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchTerm)}&count=10&language=en&format=json`,
+  );
   if (!res.ok) throw new Error('Geocoding search failed');
   const data = await res.json();
   return data.results || [];
@@ -42,7 +45,7 @@ export const searchLocations = async (query: string): Promise<GeocodingResult[]>
 export function useGeocoding(lat?: number, lon?: number) {
   const { data, error, isLoading } = useSWR<GeocodingResponse>(
     lat && lon ? ['geocoding', lat, lon] : null,
-    () => fetchLocationName(lat!, lon!)
+    () => fetchLocationName(lat!, lon!),
   );
 
   return {

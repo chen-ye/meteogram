@@ -18,9 +18,12 @@ export function useMeteogramScales({ hourlyData, width, height, margin }: UseMet
     () =>
       scaleTime({
         range: [0, xMax],
-        domain: [getDate(hourlyData[0]).getTime(), getDate(hourlyData[hourlyData.length - 1]).getTime()],
+        domain: [
+          getDate(hourlyData[0]).getTime(),
+          getDate(hourlyData[hourlyData.length - 1]).getTime(),
+        ],
       }),
-    [xMax, hourlyData]
+    [xMax, hourlyData],
   );
 
   const tempScale = useMemo(
@@ -29,11 +32,11 @@ export function useMeteogramScales({ hourlyData, width, height, margin }: UseMet
         range: [yMax, 0],
         domain: [
           Math.min(...hourlyData.map((d) => Math.min(d.temperature_2m, d.dewpoint_2m))) - 5,
-          Math.max(...hourlyData.map(d => d.temperature_2m)) + 5,
+          Math.max(...hourlyData.map((d) => d.temperature_2m)) + 5,
         ],
         nice: true,
       }),
-    [yMax, hourlyData]
+    [yMax, hourlyData],
   );
 
   const precipScale = useMemo(
@@ -43,16 +46,17 @@ export function useMeteogramScales({ hourlyData, width, height, margin }: UseMet
         // Ensure strictly positive domain max to avoid NaN if all 0
         domain: [0, Math.max(...hourlyData.map(getPrecip), 5)],
       }),
-    [yMax, hourlyData]
+    [yMax, hourlyData],
   );
 
   const cloudCenterY = yMax * 0.12;
   const cloudScale = useMemo(
-    () => scaleLinear({
+    () =>
+      scaleLinear({
         range: [0, 15], // Narrower range
         domain: [0, 100],
-    }),
-    []
+      }),
+    [],
   );
 
   const windSpeedScale = useMemo(
@@ -62,7 +66,7 @@ export function useMeteogramScales({ hourlyData, width, height, margin }: UseMet
         // Min domain 20km/h
         domain: [0, Math.max(20, ...hourlyData.map(getWindSpeed))],
       }),
-    [yMax, hourlyData]
+    [yMax, hourlyData],
   );
 
   return {
@@ -73,6 +77,6 @@ export function useMeteogramScales({ hourlyData, width, height, margin }: UseMet
     windSpeedScale,
     xMax,
     yMax,
-    cloudCenterY
+    cloudCenterY,
   };
 }

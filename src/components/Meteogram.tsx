@@ -26,9 +26,7 @@ import { TemperatureLayer } from './meteogram/visuals/TemperatureLayer';
 import { WindLayer } from './meteogram/visuals/WindLayer';
 
 export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
-
   const hourlyData = useMeteogramData(data);
-
 
   const contentWidth = React.useMemo(() => {
     return Math.max(width, width * (hourlyData.length / 48));
@@ -42,16 +40,15 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
     windSpeedScale,
     xMax,
     yMax,
-    cloudCenterY
+    cloudCenterY,
   } = useMeteogramScales({ hourlyData, width: contentWidth, height, margin: MARGIN });
 
-
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } = useTooltip<HourlyDataPoint>();
+  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, showTooltip, hideTooltip } =
+    useTooltip<HourlyDataPoint>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     scroll: true,
     detectBounds: true,
   });
-
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
@@ -72,207 +69,217 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
         });
       }
     },
-    [showTooltip, timeScale, hourlyData, tempScale, xMax]
+    [showTooltip, timeScale, hourlyData, tempScale, xMax],
   );
 
   if (width < 10) return null;
 
   return (
-    <div className="relative w-full h-full" style={{ timelineScope: '--chart-scroll' }}>
+    <div className="relative h-full w-full" style={{ timelineScope: '--chart-scroll' }}>
       <div
-        className="relative w-full h-full overflow-x-auto overflow-y-hidden touch-pan-x no-scrollbar"
+        className="no-scrollbar relative h-full w-full touch-pan-x overflow-x-auto overflow-y-hidden"
         style={{
-            scrollTimelineName: '--chart-scroll',
-            scrollTimelineAxis: 'inline'
+          scrollTimelineName: '--chart-scroll',
+          scrollTimelineAxis: 'inline',
         }}
       >
         <div
-            ref={containerRef}
-            className="relative"
-            style={{ width: contentWidth, height: height }}
+          ref={containerRef}
+          className="relative"
+          style={{ width: contentWidth, height: height }}
         >
-          <svg width={contentWidth} height={height} className="overflow-visible block">
+          <svg width={contentWidth} height={height} className="block overflow-visible">
             {/* Definitions */}
             <ChartDefs
-                width={contentWidth}
-                height={height}
-                hourlyData={hourlyData}
-                timeScale={timeScale}
-                tempScale={tempScale}
-                windSpeedScale={windSpeedScale}
+              width={contentWidth}
+              height={height}
+              hourlyData={hourlyData}
+              timeScale={timeScale}
+              tempScale={tempScale}
+              windSpeedScale={windSpeedScale}
             />
 
             {/* Background Layers */}
             <Group left={MARGIN.left} top={MARGIN.top} className="layer-background">
-                <NightCycles
-                    data={data}
-                    timeScale={timeScale}
-                    xMax={xMax}
-                    height={height}
-                    chartStart={getDate(hourlyData[0])}
-                />
-                {/* Current Time Line */}
-                <CurrentTimeLine
-                    timeScale={timeScale}
-                    height={yMax}
-                />
+              <NightCycles
+                data={data}
+                timeScale={timeScale}
+                xMax={xMax}
+                height={height}
+                chartStart={getDate(hourlyData[0])}
+              />
+              {/* Current Time Line */}
+              <CurrentTimeLine timeScale={timeScale} height={yMax} />
             </Group>
 
             {/* Grid & Chrome */}
             <Group left={MARGIN.left} top={MARGIN.top} className="layer-chrome">
-                <GridSystem timeScale={timeScale} yMax={yMax} />
+              <GridSystem timeScale={timeScale} yMax={yMax} />
             </Group>
 
             {/* Weather Visuals */}
             <Group left={MARGIN.left} top={MARGIN.top} className="layer-visuals">
-                <CloudLayer
-                    hourlyData={hourlyData}
-                    dailyData={data.daily}
-                    timeScale={timeScale}
-                    cloudScale={cloudScale}
-                    cloudCenterY={cloudCenterY}
-                    xMax={xMax}
-                />
+              <CloudLayer
+                hourlyData={hourlyData}
+                dailyData={data.daily}
+                timeScale={timeScale}
+                cloudScale={cloudScale}
+                cloudCenterY={cloudCenterY}
+                xMax={xMax}
+              />
 
-                <PrecipitationLayer
-                    hourlyData={hourlyData}
-                    timeScale={timeScale}
-                    precipScale={precipScale}
-                    yMax={yMax}
-                />
+              <PrecipitationLayer
+                hourlyData={hourlyData}
+                timeScale={timeScale}
+                precipScale={precipScale}
+                yMax={yMax}
+              />
 
-                <TemperatureLayer
-                    hourlyData={hourlyData}
-                    timeScale={timeScale}
-                    tempScale={tempScale}
-                    yMax={yMax}
-                    unitSystem={unitSystem}
-                />
+              <TemperatureLayer
+                hourlyData={hourlyData}
+                timeScale={timeScale}
+                tempScale={tempScale}
+                yMax={yMax}
+                unitSystem={unitSystem}
+              />
 
-                <WindLayer
-                    hourlyData={hourlyData}
-                    timeScale={timeScale}
-                    windSpeedScale={windSpeedScale}
-                />
+              <WindLayer
+                hourlyData={hourlyData}
+                timeScale={timeScale}
+                windSpeedScale={windSpeedScale}
+              />
 
-                {/* Cursor Overlay */}
-                <ChartCursor
-                    tooltipOpen={tooltipOpen}
-                    tooltipLeft={tooltipLeft}
-                    margin={MARGIN}
-                    yMax={yMax}
-                />
+              {/* Cursor Overlay */}
+              <ChartCursor
+                tooltipOpen={tooltipOpen}
+                tooltipLeft={tooltipLeft}
+                margin={MARGIN}
+                yMax={yMax}
+              />
             </Group>
 
-             {/* Axis (Rendered last to be on top? Though usually below visuals is fine if transparency exists, but text should be top) */}
-             <Group left={MARGIN.left} top={MARGIN.top} className="layer-axis">
-                <TimeAxis timeScale={timeScale} yMax={yMax} height={MARGIN.bottom} />
-             </Group>
-
+            {/* Axis (Rendered last to be on top? Though usually below visuals is fine if transparency exists, but text should be top) */}
+            <Group left={MARGIN.left} top={MARGIN.top} className="layer-axis">
+              <TimeAxis timeScale={timeScale} yMax={yMax} height={MARGIN.bottom} />
+            </Group>
           </svg>
 
           {/* Interaction Overlays */}
           {/* Chart Area: Blocks X scroll (pan-y), tracks pointer */}
           <div
-              className="absolute top-0 left-0 w-full touch-pan-y"
-              style={{ height: MARGIN.top + yMax }}
-              onPointerMove={handlePointerMove}
-              onPointerLeave={() => hideTooltip()}
-              data-testid="meteogram-interaction-chart"
+            className="absolute top-0 left-0 w-full touch-pan-y"
+            style={{ height: MARGIN.top + yMax }}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={() => hideTooltip()}
+            data-testid="meteogram-interaction-chart"
           />
 
           {/* Current Time Pill (HTML Overlay) */}
           {(() => {
-              const now = new Date();
-              const nowX = timeScale(now);
-              if (nowX === undefined) return null;
+            const now = new Date();
+            const nowX = timeScale(now);
+            if (nowX === undefined) return null;
 
-              return (
-                  <div
-                    className="absolute z-10 -translate-x-1/2 flex items-center justify-center pointer-events-none"
-                    style={{
-                        left: MARGIN.left + nowX,
-                        top: MARGIN.top + yMax,
-                        height: MARGIN.bottom,
-                        width: 0 // Wrapper width 0 so center alignment works with translate-x
-                    }}
-                  >
-                     <div className="px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white shadow-sm border border-white/5 whitespace-nowrap tabular-nums">
-                        {format(now, 'HH:mm')}
-                     </div>
-                  </div>
-              );
+            return (
+              <div
+                className="pointer-events-none absolute z-10 flex -translate-x-1/2 items-center justify-center"
+                style={{
+                  left: MARGIN.left + nowX,
+                  top: MARGIN.top + yMax,
+                  height: MARGIN.bottom,
+                  width: 0, // Wrapper width 0 so center alignment works with translate-x
+                }}
+              >
+                <div className="rounded border border-white/5 bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap text-white tabular-nums shadow-sm backdrop-blur-sm">
+                  {format(now, 'HH:mm')}
+                </div>
+              </div>
+            );
           })()}
 
           {/* Tooltip Portal */}
           {tooltipOpen && tooltipData && (
             <TooltipInPortal
-                top={tooltipTop}
-                left={tooltipLeft}
-                style={{ ...defaultStyles, padding: 0, background: 'transparent', boxShadow: 'none', borderRadius: 0, border: 'none' }}
+              top={tooltipTop}
+              left={tooltipLeft}
+              style={{
+                ...defaultStyles,
+                padding: 0,
+                background: 'transparent',
+                boxShadow: 'none',
+                borderRadius: 0,
+                border: 'none',
+              }}
             >
-                <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl p-3 text-xs w-32">
-                    <div className="text-white font-bold mb-2 border-b border-white/10 pb-1">
-                        {format(parseISO(tooltipData.time), 'HH:mm')}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        {/* Temp */}
-                        <div className="flex items-center gap-2">
-                            <Thermometer className="w-3.5 h-3.5 text-amber-400" />
-                            <span className="text-white font-medium">
-                                {formatTemp(tooltipData.temperature_2m, unitSystem)}°
-                            </span>
-                        </div>
-
-                        {/* Rain */}
-                        <div className="flex items-center gap-2">
-                            <Droplet className="w-3.5 h-3.5 text-blue-400" />
-                            <div className="flex items-baseline gap-0.5">
-                                <span className="text-white font-medium">{formatPrecip(tooltipData.precipitation, unitSystem)}</span>
-                                <span className="text-white/50 text-[10px]">{getUnitLabel('precip', unitSystem)}</span>
-                            </div>
-                        </div>
-
-                        {/* Wind */}
-                        <div className="flex items-center gap-2">
-                            <Wind className="w-3.5 h-3.5 text-red-500" />
-                            <div className="flex items-baseline gap-0.5">
-                                <span className="text-white font-medium">{formatSpeed(tooltipData.windspeed_10m, unitSystem)}</span>
-                                <span className="text-white/50 text-[10px]">{getUnitLabel('speed', unitSystem)}</span>
-                            </div>
-                        </div>
-
-                        {/* Cloud */}
-                        <div className="flex items-center gap-2">
-                            <Cloud className="w-3.5 h-3.5 text-white/60" />
-                            <span className="text-white font-medium">{tooltipData.cloudcover}%</span>
-                        </div>
-                    </div>
+              <div className="w-32 rounded-xl border border-white/10 bg-slate-900/80 p-3 text-xs shadow-2xl backdrop-blur-md">
+                <div className="mb-2 border-b border-white/10 pb-1 font-bold text-white">
+                  {format(parseISO(tooltipData.time), 'HH:mm')}
                 </div>
+
+                <div className="space-y-1.5">
+                  {/* Temp */}
+                  <div className="flex items-center gap-2">
+                    <Thermometer className="h-3.5 w-3.5 text-amber-400" />
+                    <span className="font-medium text-white">
+                      {formatTemp(tooltipData.temperature_2m, unitSystem)}°
+                    </span>
+                  </div>
+
+                  {/* Rain */}
+                  <div className="flex items-center gap-2">
+                    <Droplet className="h-3.5 w-3.5 text-blue-400" />
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="font-medium text-white">
+                        {formatPrecip(tooltipData.precipitation, unitSystem)}
+                      </span>
+                      <span className="text-[10px] text-white/50">
+                        {getUnitLabel('precip', unitSystem)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Wind */}
+                  <div className="flex items-center gap-2">
+                    <Wind className="h-3.5 w-3.5 text-red-500" />
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="font-medium text-white">
+                        {formatSpeed(tooltipData.windspeed_10m, unitSystem)}
+                      </span>
+                      <span className="text-[10px] text-white/50">
+                        {getUnitLabel('speed', unitSystem)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Cloud */}
+                  <div className="flex items-center gap-2">
+                    <Cloud className="h-3.5 w-3.5 text-white/60" />
+                    <span className="font-medium text-white">{tooltipData.cloudcover}%</span>
+                  </div>
+                </div>
+              </div>
             </TooltipInPortal>
           )}
         </div>
-
       </div>
 
       {/* Scroll Hint */}
       <div
-          className="absolute right-3 bottom-0 text-[10px] flex items-center justify-center uppercase tracking-widest text-white/30 font-semibold pointer-events-none touch-only"
-          style={{
-              height: MARGIN.bottom,
-              animationName: 'fade-out',
-              animationDuration: '1ms',
-              animationTimingFunction: 'linear',
-              animationIterationCount: '1',
-              animationFillMode: 'both',
-              animationTimeline: '--chart-scroll',
-              animationRange: '0 64px'
-          }}
+        className="touch-only pointer-events-none absolute right-3 bottom-0 flex items-center justify-center text-[10px] font-semibold tracking-widest text-white/30 uppercase"
+        style={{
+          height: MARGIN.bottom,
+          animationName: 'fade-out',
+          animationDuration: '1ms',
+          animationTimingFunction: 'linear',
+          animationIterationCount: '1',
+          animationFillMode: 'both',
+          animationTimeline: '--chart-scroll',
+          animationRange: '0 64px',
+        }}
       >
-          <div className="px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm">
-             Drag to scroll &rarr;
-          </div>
+        <div className="rounded bg-white/10 px-1.5 py-0.5 backdrop-blur-sm">
+          Drag to scroll &rarr;
+        </div>
       </div>
     </div>
   );
