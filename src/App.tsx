@@ -36,15 +36,6 @@ function App() {
   const activeLocation = manualLocation || autoLocation;
   const isLocating = !manualLocation && locLoading;
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('units') !== unitSystem) {
-      params.set('units', unitSystem);
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [unitSystem]);
-
   // Persist Location changes
   const updateLocationUrl = (lat?: number, lon?: number) => {
       const params = new URLSearchParams(window.location.search);
@@ -59,6 +50,17 @@ function App() {
       }
       const newUrl = `${window.location.pathname}?${params.toString()}`;
       window.history.pushState({}, '', newUrl);
+  };
+
+  const toggleUnitSystem = () => {
+    setUnitSystem(prev => {
+      const next = prev === 'metric' ? 'imperial' : 'metric';
+      const params = new URLSearchParams(window.location.search);
+      params.set('units', next);
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, '', newUrl);
+      return next;
+    });
   };
 
   const { weather, isLoading, isError } = useWeather(activeLocation?.latitude, activeLocation?.longitude);
@@ -150,7 +152,7 @@ function App() {
 
                  {/* Unit Switcher */}
                  <div
-                    onClick={() => setUnitSystem(prev => prev === 'metric' ? 'imperial' : 'metric')}
+                    onClick={toggleUnitSystem}
                     className="flex items-center p-1 bg-blue-950/20 backdrop-blur-sm rounded-lg border border-white/5 isolate cursor-pointer group h-8 relative w-24"
                  >
                     {/* Sliding Background */}
