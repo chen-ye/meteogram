@@ -6,15 +6,17 @@ import type { ScaleTime } from 'd3-scale';
 interface TimeAxisProps {
     timeScale: ScaleTime<number, number>;
     yMax: number;
+    height?: number;
 }
 
-export const TimeAxis: React.FC<TimeAxisProps> = ({ timeScale, yMax }) => {
+export const TimeAxis: React.FC<TimeAxisProps> = ({ timeScale, yMax, height = 40 }) => {
     return (
              <AxisBottom
                 scale={timeScale}
                 top={yMax}
                 stroke="transparent"
                 tickStroke="transparent"
+                tickLength={0}
                 numTicks={8}
                 tickFormat={(val) => {
                     const d = val as Date;
@@ -29,7 +31,9 @@ export const TimeAxis: React.FC<TimeAxisProps> = ({ timeScale, yMax }) => {
                         fontWeight: isDay ? 700 : 400,
                         textAnchor: 'start',
                         dx: 4,
-                        dy: 4
+                        y: 0,
+                        dy: height / 2,
+                        dominantBaseline: 'central'
                      }
                  }}
                  data-part="time-axis"

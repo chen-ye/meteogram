@@ -37,12 +37,9 @@ body {
   }
 }
 
-.touch-only {
-  display: none;
-}
 
-@media (pointer: coarse) {
+@media (pointer: fine) {
   .touch-only {
-    display: block;
+    display: none;
   }
 }

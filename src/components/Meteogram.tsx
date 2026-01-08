@@ -166,7 +166,7 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
              {/* Axis (Rendered last to be on top? Though usually below visuals is fine if transparency exists, but text should be top) */}
              <Group left={MARGIN.left} top={MARGIN.top} className="layer-axis">
-                <TimeAxis timeScale={timeScale} yMax={yMax} />
+                <TimeAxis timeScale={timeScale} yMax={yMax} height={MARGIN.bottom} />
              </Group>
 
           </svg>
@@ -189,13 +189,17 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
               return (
                   <div
-                    className="absolute px-1.5 py-1 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white pointer-events-none flex items-center justify-center -translate-x-1/2 shadow-sm border border-white/5"
+                    className="absolute z-10 -translate-x-1/2 flex items-center justify-center pointer-events-none"
                     style={{
                         left: MARGIN.left + nowX,
-                        top: MARGIN.top + yMax + 8,
+                        top: MARGIN.top + yMax,
+                        height: MARGIN.bottom,
+                        width: 0 // Wrapper width 0 so center alignment works with translate-x
                     }}
                   >
-                     <span className="tabular-nums leading-none">{format(now, 'HH:mm')}</span>
+                     <div className="px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[10px] font-semibold text-white shadow-sm border border-white/5 whitespace-nowrap tabular-nums">
+                        {format(now, 'HH:mm')}
+                     </div>
                   </div>
               );
           })()}
@@ -254,8 +258,9 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
 
       {/* Scroll Hint */}
       <div
-          className="absolute bottom-2.25 right-4 text-[10px] uppercase tracking-widest text-white/30 font-semibold pointer-events-none touch-only px-1.5 py-1 rounded bg-white/10 backdrop-blur-sm flex items-center justify-center"
+          className="absolute right-3 bottom-0 text-[10px] flex items-center justify-center uppercase tracking-widest text-white/30 font-semibold pointer-events-none touch-only"
           style={{
+              height: MARGIN.bottom,
               animationName: 'fade-out',
               animationDuration: '1ms',
               animationTimingFunction: 'linear',
@@ -265,7 +270,9 @@ export function Meteogram({ data, width, height, unitSystem }: MeteogramProps) {
               animationRange: '0 64px'
           }}
       >
-          Drag to scroll &rarr;
+          <div className="px-1.5 py-0.5 rounded bg-white/10 backdrop-blur-sm">
+             Drag to scroll &rarr;
+          </div>
       </div>
     </div>
   );
