@@ -10,8 +10,6 @@ import { Database, Wind } from 'lucide-react';
 import { formatTemp, formatSpeed, getUnitLabel, getWindDirection, inferUnitSystem, type UnitSystem } from './utils/units';
 import { NextPrecipIndicator } from './components/NextPrecipIndicator';
 
-// Helper for WMO description (if needed locally, or re-export from utils)
-const getWmoDescription = (code: number) => getWeatherDescription(code);
 
 
 function App() {
@@ -195,7 +193,7 @@ function App() {
 
              {/* Condition Text - Large, readable */}
              <div className="text-3xl md:text-5xl font-light leading-tight text-white/95 max-w-lg tracking-tight mb-4">
-                {getWmoDescription(current.weather_code)} now.
+                {getWeatherDescription(current.weather_code)} now.
              </div>
 
              {/* Metadata row */}
