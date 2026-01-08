@@ -1,4 +1,5 @@
 import { Wind, Database } from 'lucide-react';
+import { WeatherIcon } from './WeatherIcon';
 import {
   formatTemp,
   formatSpeed,
@@ -26,15 +27,23 @@ export function CurrentWeather({ data, unitSystem }: CurrentWeatherProps) {
   return (
     <div className="flex w-full flex-col items-start">
       {/* Big Thin Temp with aligned unit */}
-      <div className="flex items-start">
-        <h1 className="text-box-trim-cap text-[7rem] leading-none font-thin tracking-tighter text-white md:text-[8rem]">
-          {formatTemp(current.temperature_2m, unitSystem)}
-        </h1>
-        <div className="flex">
-          <span className="text-box-trim-cap text-3xl font-light text-blue-100/90 md:text-4xl">
-            {getUnitLabel('temp', unitSystem)}
-          </span>
+      <div className="flex items-center gap-6">
+        <div className="flex items-start">
+          <h1 className="text-box-trim-cap text-[7rem] leading-none font-thin tracking-tighter text-white md:text-[8rem]">
+            {formatTemp(current.temperature_2m, unitSystem)}
+          </h1>
+          <div className="flex">
+            <span className="text-box-trim-cap text-3xl font-light text-blue-100/90 md:text-4xl">
+              {getUnitLabel('temp', unitSystem)}
+            </span>
+          </div>
         </div>
+        <WeatherIcon
+          code={current.weather_code}
+          isDay={current.is_day}
+          className="h-24 w-24 text-blue-100/80 md:h-28 md:w-28"
+          strokeWidth={1.5}
+        />
       </div>
 
       {/* Feels Like - Increased spacing */}

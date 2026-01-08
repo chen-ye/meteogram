@@ -28,6 +28,7 @@ export interface WeatherData {
     weather_code: number;
     time: string;
     wind_gusts_10m?: number;
+    is_day: number;
   };
   utc_offset_seconds: number;
 }
@@ -56,6 +57,7 @@ const PARAMS_BASE = {
     'wind_direction_10m',
     'weather_code',
     'wind_gusts_10m',
+    'is_day',
   ],
   timezone: 'auto',
   forecast_days: 5,
@@ -144,6 +146,7 @@ export async function fetchWeatherFlatBuffers(lat: number, lon: number): Promise
       wind_direction_10m: current.variables(2)!.value(),
       weather_code: current.variables(3)!.value(),
       wind_gusts_10m: current.variables(4)!.value(),
+      is_day: current.variables(5)!.value(),
     },
     utc_offset_seconds: utcOffsetSeconds,
   };
