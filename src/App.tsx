@@ -5,10 +5,10 @@ import { useGeocoding } from './hooks/useGeocoding';
 import { LocationSearch } from './components/LocationSearch';
 import { Meteogram } from './components/Meteogram';
 import { ParentSize } from '@visx/responsive';
-import { getWeatherDescription } from './utils/weatherCodes';
-import { Database, Wind } from 'lucide-react';
-import { formatTemp, formatSpeed, getUnitLabel, getWindDirection, inferUnitSystem, type UnitSystem } from './utils/units';
+import { inferUnitSystem, type UnitSystem } from './utils/units';
 import { NextPrecipIndicator } from './components/NextPrecipIndicator';
+import { UnitSwitcher } from './components/UnitSwitcher';
+import { CurrentWeather } from './components/CurrentWeather';
 
 
 
@@ -122,12 +122,6 @@ function App() {
      );
   }
 
-  const current = weather.current;
-
-  // Apparent temp / Feels like
-  // Find current hour index
-  const curIndex = weather.hourly.time.findIndex(t => t === current.time);
-  const apparentTemp = curIndex !== -1 ? weather.hourly.apparent_temperature[curIndex] : current.temperature_2m;
 
 
   return (
@@ -151,73 +145,13 @@ function App() {
                  />
 
                  {/* Unit Switcher */}
-                 <div
-                    onClick={toggleUnitSystem}
-                    className="flex items-center p-1 bg-blue-950/20 backdrop-blur-sm rounded-lg border border-white/5 isolate cursor-pointer group h-8 relative w-24"
-                 >
-                    {/* Sliding Background */}
-                    <div
-                        className={`absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-white/10 rounded shadow-sm transition-transform duration-300 ease-out ${
-                            unitSystem === 'imperial' ? 'translate-x-full' : 'translate-x-0'
-                        }`}
-                    />
-
-                    <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
-                            unitSystem === 'metric' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-                        }`}>
-                        °C
-                    </div>
-
-                    <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
-                            unitSystem === 'imperial' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-                        }`}>
-                        °F
-                    </div>
-                 </div>
+                 <UnitSwitcher unitSystem={unitSystem} onToggle={toggleUnitSystem} />
              </div>
 
-             {/* Big Thin Temp with aligned unit */}
-             <div className="flex items-start">
-                 <h1 className="text-[7rem] md:text-[8rem] leading-none font-thin tracking-tighter text-white text-box-trim-cap">
-                    {formatTemp(current.temperature_2m, unitSystem)}
-                 </h1>
-                 <div className="flex">
-                    <span className="text-3xl md:text-4xl font-light text-blue-100/90 text-box-trim-cap">
-                        {getUnitLabel('temp', unitSystem)}
-                    </span>
-                 </div>
-             </div>
+             {/* Current Weather Display */}
+             <CurrentWeather data={weather} unitSystem={unitSystem} />
 
-             {/* Feels Like - Increased spacing */}
-             <div className={`text-sm font-medium tracking-widest text-blue-200/60 uppercase mt-2 mb-4 ${formatTemp(current.temperature_2m, unitSystem) === formatTemp(apparentTemp, unitSystem) ? 'invisible' : ''}`}>
-                FEELS LIKE {formatTemp(apparentTemp, unitSystem)}°
-             </div>
-
-             {/* Condition Text - Large, readable */}
-             <div className="text-3xl md:text-5xl font-light leading-tight text-white/95 max-w-lg tracking-tight mb-4">
-                {getWeatherDescription(current.weather_code)} now.
-             </div>
-
-             {/* Metadata row */}
-             <div className="flex items-center gap-3 text-blue-200/60 text-xs font-semibold tracking-widest uppercase">
-
-                 <div className="flex items-center gap-1.5">
-                     <Wind className="w-3 h-3 text-blue-200/40" />
-                     <span>
-                        {formatSpeed(current.wind_speed_10m, unitSystem)}
-                        {' '}{getUnitLabel('speed', unitSystem)}{' '}
-                        {getWindDirection(current.wind_direction_10m)}
-                        {current.wind_gusts_10m && current.wind_gusts_10m > current.wind_speed_10m && (
-                           <span className="opacity-60 ml-1">(Gusts {formatSpeed(current.wind_gusts_10m, unitSystem)}
-                           {' '}{getUnitLabel('speed', unitSystem)})</span>
-                        )}
-                     </span>
-                 </div>
-                 <div className="flex items-center gap-1.5">
-                    <Database className="w-3 h-3 text-blue-200/40" />
-                    <span>Open Meteo</span>
-                 </div>
-             </div>
+             {/* Rain/Snow at specific time (Dynamic) - Condition Render */}
 
              {/* Rain/Snow at specific time (Dynamic) - Condition Render */}
              <NextPrecipIndicator hourly={weather.hourly} />
