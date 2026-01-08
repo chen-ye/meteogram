@@ -13,6 +13,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@bybas/weather-icons": "^2.0.0",
     "@types/d3-scale": "^4.0.9",
     "@visx/axis": "^4.0.1-alpha.0",
     "@visx/event": "^4.0.1-alpha.0",

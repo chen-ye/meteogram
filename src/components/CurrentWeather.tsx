@@ -41,7 +41,7 @@ export function CurrentWeather({ data, unitSystem }: CurrentWeatherProps) {
         <WeatherIcon
           code={current.weather_code}
           isDay={current.is_day}
-          className="h-24 w-24 text-blue-100/80 md:h-28 md:w-28"
+          className="h-26 w-26 text-blue-100/80 md:h-30 md:w-30"
           strokeWidth={1.5}
         />
       </div>

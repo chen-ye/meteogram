@@ -13,63 +13,94 @@ import {
   type LucideProps,
 } from 'lucide-react';
 
+export const WMO = {
+  ClearSky: 0,
+  MainlyClear: 1,
+  PartlyCloudy: 2,
+  Overcast: 3,
+  Fog: 45,
+  DepositingRimeFog: 48,
+  LightDrizzle: 51,
+  ModerateDrizzle: 53,
+  DenseDrizzle: 55,
+  LightFreezingDrizzle: 56,
+  DenseFreezingDrizzle: 57,
+  SlightRain: 61,
+  ModerateRain: 63,
+  HeavyRain: 65,
+  LightFreezingRain: 66,
+  HeavyFreezingRain: 67,
+  SlightSnowFall: 71,
+  ModerateSnowFall: 73,
+  HeavySnowFall: 75,
+  SnowGrains: 77,
+  SlightRainShowers: 80,
+  ModerateRainShowers: 81,
+  ViolentRainShowers: 82,
+  SlightSnowShowers: 85,
+  HeavySnowShowers: 86,
+  Thunderstorm: 95,
+  ThunderstormSlightHail: 96,
+  ThunderstormHeavyHail: 99,
+} as const;
+
 export function getWeatherDescription(code: number): string {
   switch (code) {
-    case 0:
+    case WMO.ClearSky:
       return 'Clear sky';
-    case 1:
+    case WMO.MainlyClear:
       return 'Mainly clear';
-    case 2:
+    case WMO.PartlyCloudy:
       return 'Partly cloudy';
-    case 3:
+    case WMO.Overcast:
       return 'Overcast';
-    case 45:
+    case WMO.Fog:
       return 'Fog';
-    case 48:
+    case WMO.DepositingRimeFog:
       return 'Depositing rime fog';
-    case 51:
+    case WMO.LightDrizzle:
       return 'Light drizzle';
-    case 53:
+    case WMO.ModerateDrizzle:
       return 'Moderate drizzle';
-    case 55:
+    case WMO.DenseDrizzle:
       return 'Dense drizzle';
-    case 56:
+    case WMO.LightFreezingDrizzle:
       return 'Light freezing drizzle';
-    case 57:
+    case WMO.DenseFreezingDrizzle:
       return 'Dense freezing drizzle';
-    case 61:
+    case WMO.SlightRain:
       return 'Slight rain';
-    case 63:
+    case WMO.ModerateRain:
       return 'Moderate rain';
-    case 65:
+    case WMO.HeavyRain:
       return 'Heavy rain';
-    case 66:
+    case WMO.LightFreezingRain:
       return 'Light freezing rain';
-    case 67:
+    case WMO.HeavyFreezingRain:
       return 'Heavy freezing rain';
-    case 71:
+    case WMO.SlightSnowFall:
       return 'Slight snow fall';
-    case 73:
+    case WMO.ModerateSnowFall:
       return 'Moderate snow fall';
-    case 75:
+    case WMO.HeavySnowFall:
       return 'Heavy snow fall';
-    case 77:
+    case WMO.SnowGrains:
       return 'Snow grains';
-    case 80:
+    case WMO.SlightRainShowers:
       return 'Slight rain showers';
-    case 81:
+    case WMO.ModerateRainShowers:
       return 'Moderate rain showers';
-    case 82:
+    case WMO.ViolentRainShowers:
       return 'Violent rain showers';
-    case 85:
+    case WMO.SlightSnowShowers:
       return 'Slight snow showers';
-    case 86:
+    case WMO.HeavySnowShowers:
       return 'Heavy snow showers';
-    case 95:
+    case WMO.Thunderstorm:
       return 'Thunderstorm';
-    case 96:
+    case WMO.ThunderstormSlightHail:
       return 'Thunderstorm with slight hail';
-    case 99:
+    case WMO.ThunderstormHeavyHail:
       return 'Thunderstorm with heavy hail';
     default:
       return 'Unknown';
