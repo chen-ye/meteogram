@@ -9,6 +9,7 @@ import { inferUnitSystem, type UnitSystem } from './utils/units';
 import { NextPrecipIndicator } from './components/NextPrecipIndicator';
 import { UnitSwitcher } from './components/UnitSwitcher';
 import { CurrentWeather } from './components/CurrentWeather';
+import { FullScreenMessage } from './components/FullScreenMessage';
 
 
 
@@ -86,7 +87,7 @@ function App() {
 
   if (!activeLocation && isLocating) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-900 text-white p-4 text-center font-sans">
+      <FullScreenMessage>
         {locError ? (
            <div className="text-red-400">
              <p className="text-xl mb-2">Location Error</p>
@@ -99,26 +100,28 @@ function App() {
             <p className="text-xl font-light tracking-wide">Locating you...</p>
           </div>
         )}
-      </div>
+      </FullScreenMessage>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-900 text-white">
+      <FullScreenMessage>
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-white/50"></div>
-      </div>
+      </FullScreenMessage>
     );
   }
 
   if (isError || !weather || !activeLocation) {
      return (
-        <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
-           <p className="text-red-400 font-light">Failed to load weather data.</p>
-           <button onClick={() => updateLocationUrl()} className="px-4 py-2 bg-blue-600 rounded text-sm hover:bg-blue-500 transition-colors">
-             Try Auto-Location
-           </button>
-        </div>
+        <FullScreenMessage>
+           <div className="flex flex-col gap-4 items-center">
+              <p className="text-red-400 font-light">Failed to load weather data.</p>
+              <button onClick={() => updateLocationUrl()} className="px-4 py-2 bg-blue-600 rounded text-sm hover:bg-blue-500 transition-colors">
+                Try Auto-Location
+              </button>
+           </div>
+        </FullScreenMessage>
      );
   }
 

@@ -7,6 +7,10 @@ interface UnitSwitcherProps {
 }
 
 export function UnitSwitcher({ unitSystem, onToggle }: UnitSwitcherProps) {
+  const itemClass = "relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none";
+  const activeClass = "text-white";
+  const inactiveClass = "text-blue-200/40 group-hover:text-blue-200/60";
+
   return (
     <div
       onClick={onToggle}
@@ -19,15 +23,11 @@ export function UnitSwitcher({ unitSystem, onToggle }: UnitSwitcherProps) {
         }`}
       />
 
-      <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
-        unitSystem === 'metric' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-      }`}>
+      <div className={`${itemClass} ${unitSystem === 'metric' ? activeClass : inactiveClass}`}>
         °C
       </div>
 
-      <div className={`relative z-10 w-1/2 flex justify-center items-center text-xs font-bold transition-colors duration-300 select-none ${
-        unitSystem === 'imperial' ? 'text-white' : 'text-blue-200/40 group-hover:text-blue-200/60'
-      }`}>
+      <div className={`${itemClass} ${unitSystem === 'imperial' ? activeClass : inactiveClass}`}>
         °F
       </div>
     </div>
